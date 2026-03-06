@@ -1,0 +1,364 @@
+---
+// @src/components/organisms/TestimonialsSection.astro
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  testimonials: CollectionEntry<"testimonials">[];
+  sectionData?: {
+    title?: string;
+    subtitle?: string;
+  };
+}
+
+const { testimonials, sectionData } = Astro.props;
+const sortedTestimonials = testimonials.sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const title = sectionData?.title || "Lo Que Dicen Nuestros Socios";
+
+import { mdToHtml } from "../../utils/markdown";
+
+const processedTestimonials = await Promise.all(
+  sortedTestimonials.map(async (item) => ({
+    ...item,
+    renderedContent: await mdToHtml(item.data.content),
+  })),
+);
+
+// --- LOGICA DE AGRUPACIÓN (CHUNKING) ---
+// Dividimos el array de testimonios en bloques de 3
+function chunkArray<T>(array: T[], size: number): T[][] {
+  const result: T[][] = [];
+  for (let i = 0; i < array.length; i += size) {
+    result.push(array.slice(i, i + size));
+  }
+  return result;
+}
+
+const desktopChunks = chunkArray(processedTestimonials, 2);
+const mobileChunks = chunkArray(processedTestimonials, 1);
+---
+
+<section
+  id="testimonials"
+  class="min-h-dvh flex items-center relative w-full bg-transparent overflow-hidden pb-20"
+>
+  {/* Definición global de gradiente dorado animado A2LT Aura */}
+  <svg class="absolute w-0 h-0 overflow-hidden" aria-hidden="true">
+    <defs>
+      <linearGradient id="gold-aura-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" stop-color="var(--color-gold)"></stop>
+        <stop offset="25%" stop-color="var(--color-gold)"></stop>
+        <stop offset="50%" stop-color="var(--color-gold-glow)"></stop>
+        <stop offset="75%" stop-color="var(--color-gold)"></stop>
+        <stop offset="100%" stop-color="var(--color-gold)"></stop>
+        <animateTransform
+          attributeName="gradientTransform"
+          type="translate"
+          from="-1 0"
+          to="1 0"
+          dur="6s"
+          repeatCount="indefinite"></animateTransform>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2
+        class="text-3xl lg:text-5xl font-heading font-bold text-white mb-4 [&_p]:inline [&_p]:m-0 [&_strong]:text-neon"
+      >
+        <Fragment set:html={await mdToHtml(title)} />
+      </h2>
+      {
+        sectionData?.subtitle && (
+          <p class="text-gray-400 max-w-2xl mx-auto text-lg [&_p]:inline [&_p]:m-0 [&_strong]:text-neon ">
+            <Fragment set:html={await mdToHtml(sectionData.subtitle)} />
+          </p>
+        )
+      }
+    </div>
+
+    {/* CONTENEDOR PRINCIPAL CON FLECHAS LATERALES */}
+    <div class="relative flex items-center justify-center gap-4 lg:gap-12">
+      {/* BOTÓN PREV - IZQUIERDA */}
+      <button
+        id="prev-btn"
+        class="hidden md:flex p-3 rounded-full bg-surface border border-white/10 hover:bg-neon hover:text-primary hover:border-transparent text-white z-20 transition-all duration-300 hover:shadow-[0_0_20px_var(--color-neon-glow)] group"
+        aria-label="Anterior"
+      >
+        <span class="text-2xl group-hover:-translate-x-1 transition-transform"
+          >&larr;</span
+        >
+      </button>
+
+      {/* SLIDER WINDOW DESKTOP */}
+      <div class="relative w-full lg:w-[95%] min-h-[400px] hidden md:block">
+        {
+          desktopChunks.map((chunk, slideIndex) => (
+            <div
+              class={`testimonio-slide-desktop absolute inset-0 transition-opacity duration-700 flex items-center justify-center ${slideIndex === 0 ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
+              data-index={slideIndex}
+            >
+              <div class="w-full h-full grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12 auto-rows-fr">
+                {chunk.map((item) => (
+                  <div class="glass-card flex flex-col justify-between p-8 lg:p-10 rounded-[2rem] relative border border-white/10 overflow-hidden h-full group/card hover:border-neon/30 transition-all duration-500 hover:shadow-[0_0_40px_rgba(99,102,241,0.1)]">
+                    <span class="absolute -top-4 -right-2 text-8xl text-neon/5 font-serif leading-none select-none group-hover/card:text-neon/10 transition-colors duration-500">
+                      "
+                    </span>
+
+                    <div class="relative z-10 flex flex-col h-full">
+                      {/* Estrellas y Rating Dorados Refinados */}
+                      <div class="flex gap-1 mb-6">
+                        {[1, 2, 3, 4, 5].map(() => (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-7 h-7 drop-shadow-[0_0_12px_var(--color-gold-glow)] group-hover/card:scale-110 transition-transform duration-300"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              fill="url(#gold-aura-grad)"
+                              d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
+                            />
+                          </svg>
+                        ))}
+                      </div>
+
+                      {/* Contenido del testimonio */}
+                      <div class="text-gray-300 italic mb-8 leading-relaxed text-base md:text-lg text-left grow flex items-center justify-start overflow-hidden [&_p]:inline [&_p]:m-0 line-clamp-6">
+                        <Fragment set:html={item.renderedContent} />
+                      </div>
+
+                      {/* Autor */}
+                      <div class="flex items-center justify-start gap-4 pt-6 border-t border-white/5 mt-auto">
+                        {/* Avatar o Inicial */}
+                        <div class="w-14 h-14 rounded-2xl bg-linear-to-br from-primary to-surface flex items-center justify-center text-white font-bold text-xl shadow-xl border border-white/10 shrink-0 overflow-hidden group-hover/card:scale-105 transition-transform duration-500">
+                          {item.data.avatar ? (
+                            <img
+                              src={
+                                typeof item.data.avatar === "string"
+                                  ? item.data.avatar
+                                  : item.data.avatar.src
+                              }
+                              alt={item.data.author}
+                              class="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span class="bg-clip-text text-transparent bg-linear-to-r from-neon to-white">
+                              {item.data.author.charAt(0)}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Nombre y cargo */}
+                        <div class="text-left">
+                          <h4 class="text-white font-bold text-base md:text-lg tracking-wide line-clamp-1">
+                            {item.data.author}
+                          </h4>
+                          {item.data.role && (
+                            <p class="text-neon/70 text-xs md:text-sm font-medium tracking-wide line-clamp-1 uppercase">
+                              {item.data.role}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* SLIDER WINDOW MOBILE */}
+      <div class="relative w-full min-h-[350px] block md:hidden">
+        {
+          mobileChunks.map((chunk, slideIndex) => (
+            <div
+              class={`testimonio-slide-mobile absolute inset-0 transition-opacity duration-700 flex items-center justify-center ${slideIndex === 0 ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"}`}
+              data-index={slideIndex}
+            >
+              <div class="w-full h-full grid grid-cols-1 gap-6 auto-rows-fr">
+                {chunk.map((item) => (
+                  <div class="glass-card flex flex-col justify-between p-8 rounded-[2rem] relative border border-white/10 overflow-hidden h-full">
+                    <span class="absolute -top-2 -right-1 text-7xl text-neon/5 font-serif leading-none select-none">
+                      "
+                    </span>
+
+                    <div class="relative z-10 flex flex-col h-full">
+                      {/* Estrellas Doradas Refinadas */}
+                      <div class="flex gap-1 mb-5">
+                        {[1, 2, 3, 4, 5].map(() => (
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="w-4 h-4 drop-shadow-[0_0_8px_var(--color-gold-glow)]"
+                            viewBox="0 0 16 16"
+                          >
+                            <path
+                              fill="url(#gold-aura-grad)"
+                              d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"
+                            />
+                          </svg>
+                        ))}
+                      </div>
+
+                      {/* Contenido del testimonio */}
+                      <div class="text-gray-300 italic mb-6 leading-relaxed text-base text-left grow flex items-center justify-start overflow-hidden [&_p]:inline [&_p]:m-0 line-clamp-6">
+                        <Fragment set:html={item.renderedContent} />
+                      </div>
+
+                      {/* Autor */}
+                      <div class="flex items-center justify-start gap-4 pt-6 border-t border-white/5 mt-auto">
+                        <div class="w-12 h-12 rounded-xl bg-linear-to-br from-primary to-surface flex items-center justify-center text-white font-bold text-lg shadow-lg border border-white/10 shrink-0 overflow-hidden">
+                          {item.data.avatar ? (
+                            <img
+                              src={
+                                typeof item.data.avatar === "string"
+                                  ? item.data.avatar
+                                  : item.data.avatar.src
+                              }
+                              alt={item.data.author}
+                              class="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span class="text-neon">
+                              {item.data.author.charAt(0)}
+                            </span>
+                          )}
+                        </div>
+
+                        <div class="text-left">
+                          <h4 class="text-white font-bold text-base tracking-wide line-clamp-1">
+                            {item.data.author}
+                          </h4>
+                          {item.data.role && (
+                            <p class="text-neon/70 text-xs font-medium tracking-wide line-clamp-1 uppercase">
+                              {item.data.role}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
+
+      {/* BOTÓN NEXT - DERECHA */}
+      <button
+        id="next-btn"
+        class="hidden md:flex p-3 rounded-full bg-surface border border-white/10 hover:bg-neon hover:text-primary hover:border-transparent text-white z-20 transition-all duration-300 hover:shadow-[0_0_20px_var(--color-neon-glow)] group"
+        aria-label="Siguiente"
+      >
+        <span class="text-2xl group-hover:translate-x-1 transition-transform"
+          >&rarr;</span
+        >
+      </button>
+    </div>
+
+    {
+      /* NAVEGACIÓN MÓVIL (Solo visible en pantallas pequeñas debajo de la card) */
+    }
+    <div class="flex md:hidden justify-center items-center gap-8 mt-8">
+      <button
+        id="prev-btn-mobile"
+        class="p-3 rounded-full bg-surface border border-white/10 hover:bg-neon hover:text-primary hover:border-transparent text-white transition-all duration-300 hover:shadow-[0_0_15px_var(--color-neon-glow)]"
+      >
+        &larr;
+      </button>
+      <button
+        id="next-btn-mobile"
+        class="p-3 rounded-full bg-surface border border-white/10 hover:bg-neon hover:text-primary hover:border-transparent text-white transition-all duration-300 hover:shadow-[0_0_15px_var(--color-neon-glow)]"
+      >
+        &rarr;
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.addEventListener("astro:page-load", () => {
+    initSlider();
+  });
+
+  // Fallback por si no hay ViewTransitions
+  if (document.readyState === "complete") {
+    initSlider();
+  } else {
+    document.addEventListener("DOMContentLoaded", initSlider);
+  }
+
+  function initSlider() {
+    initCarousel(".testimonio-slide-desktop", "prev-btn", "next-btn");
+    initCarousel(
+      ".testimonio-slide-mobile",
+      "prev-btn-mobile",
+      "next-btn-mobile",
+    );
+  }
+
+  function initCarousel(slideSelector: string, prevId: string, nextId: string) {
+    const slides = document.querySelectorAll(slideSelector);
+    const prevBtn = document.getElementById(prevId);
+    const nextBtn = document.getElementById(nextId);
+
+    if (!slides.length) return;
+
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+    let interval: any;
+
+    function showSlide(index: number) {
+      if (index >= totalSlides) currentIndex = 0;
+      else if (index < 0) currentIndex = totalSlides - 1;
+      else currentIndex = index;
+
+      // Update Slides
+      slides.forEach((slide, i) => {
+        if (i === currentIndex) {
+          slide.classList.remove("opacity-0", "pointer-events-none", "z-0");
+          slide.classList.add("opacity-100", "z-10");
+        } else {
+          slide.classList.remove("opacity-100", "z-10");
+          slide.classList.add("opacity-0", "pointer-events-none", "z-0");
+        }
+      });
+    }
+
+    function nextSlide() {
+      showSlide(currentIndex + 1);
+    }
+
+    function prevSlide() {
+      showSlide(currentIndex - 1);
+    }
+
+    function startAutoPlay() {
+      stopAutoPlay();
+      interval = setInterval(nextSlide, 8000);
+    }
+
+    function stopAutoPlay() {
+      if (interval) clearInterval(interval);
+    }
+
+    // Event Listeners
+    nextBtn?.addEventListener("click", () => {
+      nextSlide();
+      startAutoPlay();
+    });
+
+    prevBtn?.addEventListener("click", () => {
+      prevSlide();
+      startAutoPlay();
+    });
+
+    // Iniciar
+    startAutoPlay();
+  }
+</script>

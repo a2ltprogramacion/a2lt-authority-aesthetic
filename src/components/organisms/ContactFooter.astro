@@ -1,0 +1,487 @@
+---
+// @src/components/organisms/ContactFooter.astro
+import { Image } from "astro:assets";
+import { getEntry } from "astro:content";
+import { mdToHtml } from "../../utils/markdown";
+import SocialIcon from "../atoms/SocialIcon.astro";
+import WhatsAppIcon from "../atoms/WhatsAppIcon.astro";
+
+interface Props {
+  data: {
+    heading?: string;
+    subheading?: string;
+    email?: string;
+    phone?: string;
+    address?: string;
+    social?: {
+      facebook?: string;
+      instagram?: string;
+      linkedin?: string;
+      twitter?: string;
+      youtube?: string;
+      tiktok?: string;
+    };
+    google_maps_link?: string;
+    footer_logo?: any;
+    footer_logo_alt?: string;
+    copyright?: string;
+  };
+  modules?: {
+    show_hero: boolean;
+    show_services: boolean;
+    show_knowledge: boolean;
+    show_clients: boolean;
+    show_testimonials: boolean;
+    show_casos_clinicos: boolean;
+    show_about: boolean;
+    show_faq: boolean;
+  };
+}
+
+const { data, modules } = Astro.props;
+
+// Diccionario de etiquetas de UI para evitar hardcoding en el HTML
+const UI_LABELS = {
+  copyToast: "Correo copiado en el portapapeles",
+  navTitle: "Navegación",
+  contactTitle: "Datos de Contacto",
+  emailLabel: "Correo Electrónico",
+  phoneLabel: "Teléfono",
+  locationLabel: "Ubicación",
+};
+
+// Safe handling for phone
+const phone = data.phone || "";
+const cleanPhone = phone.replace(/[^0-9]/g, "");
+const waHref = cleanPhone ? `https://wa.me/${cleanPhone}` : "#";
+const brand_name = "A2LT Soluciones";
+
+// ... (Lógica de links igual) ...
+
+// 1. Obtener navegación desde CMS (Reutilizamos la lógica del Navbar)
+const navSettings = await getEntry("settings", "navigation");
+const customLinks = navSettings?.data?.links;
+
+// Fallback si no hay links configurados
+const defaultLinks = [
+  { label: "Inicio", section_id: "hero", is_external: false },
+  { label: "Servicios", section_id: "servicios", is_external: false },
+  {
+    label: "Revista Médica",
+    section_id: "knowledge",
+    is_external: false,
+  },
+  { label: "Nosotros", section_id: "nosotros", is_external: false },
+  { label: "Casos Clínicos", section_id: "casos-clinicos", is_external: false },
+  { label: "Contacto", section_id: "contact", is_external: false },
+];
+
+// Lógica de Fusión (Smart Merge)
+let linksToRender = [...defaultLinks];
+
+if (customLinks && customLinks.length > 0) {
+  customLinks.forEach((link: any) => {
+    // Si el ID existe en los defaults, actualizamos (ej: cambiar label)
+    const index = linksToRender.findIndex(
+      (defaultLink) => defaultLink.section_id === link.section_id,
+    );
+
+    if (index !== -1) {
+      linksToRender[index] = { ...linksToRender[index], ...link };
+    } else {
+      // Si es nuevo o externo, lo agregamos al final
+      linksToRender.push(link);
+    }
+  });
+}
+
+// 2. Filtrar enlaces según visibilidad (Feature Flagging)
+const activeLinks = linksToRender
+  .filter((link: any) => {
+    // Si es externo, siempre se muestra
+    if (link.is_external) return true;
+
+    // Si no hay configuración de módulos, todo se muestra
+    if (!modules) return true;
+
+    // Mapa de visibilidad
+    const visibilityMap: Record<string, keyof typeof modules> = {
+      hero: "show_hero",
+      servicios: "show_services",
+      knowledge: "show_knowledge",
+      nosotros: "show_about",
+      clients: "show_clients",
+      faq: "show_faq",
+      testimonials: "show_testimonials",
+      "casos-clinicos": "show_casos_clinicos",
+      contact: "show_hero", // Contacto visible si el Hero (Home) está visible
+    };
+
+    // Excepción: Contacto siempre visible
+    if (link.section_id === "contact") return true;
+
+    const flagKey = visibilityMap[link.section_id];
+    return flagKey ? modules[flagKey] : true;
+  })
+  .map((link: any) => ({
+    text: link.label,
+    href:
+      link.is_external || link.external_url
+        ? link.external_url || "#"
+        : `/#${link.section_id}`,
+  }));
+---
+
+<footer
+  id="contact"
+  class="bg-slate-50 relative pt-20 pb-28 md:pb-10 px-6 overflow-hidden border-t border-black/10"
+>
+  {/* Efectos Ambientales (Sello de Marca) */}
+  <div
+    class="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-linear-to-r from-transparent via-secondary/50 to-transparent"
+  >
+  </div>
+  <div
+    class="absolute bottom-0 right-0 w-96 h-96 bg-primary/10 blur-[100px] rounded-full pointer-events-none"
+  >
+  </div>
+
+  <div class="container mx-auto max-w-7xl relative z-10">
+    {/* --- GRID DE 5 COLUMNAS --- */}
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.5fr_0.3fr_1.5fr_1.1fr] gap-8 mb-16 items-start"
+    >
+      {/* COLUMNA 1: CONTENIDO */}
+      <div class="space-y-4 text-center md:text-left">
+        <h2
+          class="prose-unsize text-xl md:text-3xl font-heading font-black text-slate-800 tracking-tight [&_p]:inline [&_p]:m-0"
+        >
+          <Fragment
+            set:html={await mdToHtml(data.heading || "¿Listo para empezar?")}
+          />
+        </h2>
+        <div
+          class="prose-unsize text-slate-500 font-medium leading-relaxed text-base [&_p]:inline [&_p]:m-0"
+        >
+          <Fragment
+            set:html={await mdToHtml(
+              data.subheading ||
+                "Innovación digital para empresas que buscan trascender los límites convencionales.",
+            )}
+          />
+        </div>
+      </div>
+
+      {/* COLUMNA 2: NAVEGACIÓN */}
+      <div>
+        <h3 class="footer-section-title">{UI_LABELS.navTitle}</h3>
+        <ul class="space-y-3">
+          {
+            activeLinks.map((link: any) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-slate-500 hover:text-neon transition-colors text-base flex items-center gap-2 group leading-none"
+                  target={link.href.startsWith("http") ? "_blank" : "_self"}
+                >
+                  <span class="w-1.5 h-1.5 bg-slate-300 rounded-full group-hover:bg-neon transition-colors" />
+                  {link.text}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      {/* COLUMNA 3: BRANDING + SOCIALES */}
+      <div class="flex flex-col items-center">
+        {/* Bloque Logo */}
+        <div class="pb-2">
+          {
+            data.footer_logo ? (
+              <Image
+                src={data.footer_logo}
+                alt={data.footer_logo_alt || brand_name}
+                class="w-48 object-contain"
+              />
+            ) : (
+              <h3 class="text-2xl font-heading font-black text-slate-800">
+                {brand_name}
+                <span class="text-accent">.</span>
+              </h3>
+            )
+          }
+        </div>
+
+        {/* Bloque Redes Sociales */}
+        <div class="flex flex-wrap gap-3 pt-5">
+          {
+            [
+              "facebook",
+              "instagram",
+              "tiktok",
+              "linkedin",
+              "twitter",
+              "youtube",
+            ].map((platform) => {
+              const url = data.social?.[platform as keyof typeof data.social];
+              return (
+                url && (
+                  <a
+                    href={url}
+                    target="_blank"
+                    aria-label={platform}
+                    class={`a2lt-icon-led ${platform === "twitter" ? "x" : platform}-hover`}
+                  >
+                    <SocialIcon platform={platform} />
+                  </a>
+                )
+              );
+            })
+          }
+        </div>
+      </div>
+
+      {/* COLUMNA 4: CONTACTO */}
+      <div class="space-y-6">
+        <h3 class="footer-section-title">{UI_LABELS.contactTitle}</h3>
+
+        <ul class="space-y-5">
+          {/* EMAIL */}
+          {
+            data.email && (
+              <li class="group">
+                <p class="text-[0.65rem] text-slate-400 uppercase font-black tracking-widest mb-2">
+                  {UI_LABELS.emailLabel}
+                </p>
+                <div class="flex items-center gap-3 py-1 group/item">
+                  <div class="bg-slate-100 p-2 rounded-lg group-hover/item:bg-neon group-hover/item:text-primary transition-all duration-300">
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+                  <a
+                    href={`mailto:${data.email}`}
+                    class="text-slate-600 font-semibold transition-colors hover:text-neon truncate"
+                  >
+                    {data.email}
+                  </a>
+                  <button
+                    id="email-copy-button"
+                    data-email={data.email}
+                    class="ml-auto text-slate-400 hover:text-neon transition-colors p-1"
+                    aria-label="Copiar correo"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </li>
+            )
+          }
+
+          {/* TELÉFONO */}
+          {
+            data.phone && (
+              <li>
+                <p class="text-[0.65rem] text-slate-400 uppercase font-black tracking-widest mb-2">
+                  {UI_LABELS.phoneLabel}
+                </p>
+                <a
+                  href={waHref}
+                  target="_blank"
+                  class="flex items-center gap-3 text-slate-600 font-semibold hover:text-[#25D366] transition-colors py-1 group/tel"
+                >
+                  <div class="bg-slate-100 p-2 rounded-lg group-hover/tel:bg-[#25D366] group-hover/tel:text-white transition-all duration-300">
+                    <WhatsAppIcon class="w-4 h-4" />
+                  </div>
+                  <span>{data.phone}</span>
+                </a>
+              </li>
+            )
+          }
+
+          {/* DIRECCIÓN */}
+          {
+            data.address && (
+              <li>
+                <p class="text-[0.65rem] text-slate-400 uppercase font-black tracking-widest mb-1">
+                  {UI_LABELS.locationLabel}
+                </p>
+                <span class="text-slate-600 font-medium text-lg leading-tight block">
+                  {data.address}
+                </span>
+
+                {/* LINK GOOGLE MAPS / GPS */}
+                {data.google_maps_link && (
+                  <a
+                    href={data.google_maps_link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="group inline-flex items-center gap-3 mt-4 text-slate-500 font-bold text-xs uppercase tracking-widest transition-all duration-300 hover:text-neon"
+                  >
+                    <div class="bg-slate-100 p-2 rounded-lg group-hover:bg-neon group-hover:text-primary transition-all duration-300">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="w-4 h-4"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10m0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6" />
+                      </svg>
+                    </div>
+                    <span>Ver en Google Maps / GPS</span>
+                  </a>
+                )}
+              </li>
+            )
+          }
+        </ul>
+      </div>
+    </div>
+
+    {/* COPYRIGHT */}
+    <div
+      class="pt-5 flex flex-col md:flex-row justify-between items-center text-sm font-sans text-slate-400 border-t border-black/10"
+    >
+      <p>{data.copyright || `© ${new Date().getFullYear()} ${brand_name}`}</p>
+      <p class="mt-5 md:mt-0 opacity-50 text-xs text-center md:text-right">
+        Ingeniería de Software ⚡ por <a
+          href="https://a2lt.netlify.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="hover:text-neon transition-colors text-xs font-bold underline decoration-neon/30 underline-offset-2"
+          >A2LT Soluciones</a
+        > | Maximizando la ganancia por cada línea de código.
+      </p>
+    </div>
+  </div>
+</footer>
+
+<style is:global>
+  /* --- Estilos Redes Sociales (Footer) --- */
+  .social-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.8rem;
+    height: 2.8rem;
+    border-radius: 10px;
+    background: rgba(0, 0, 0, 0.04);
+    color: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* HOVER EFFECTS: Sello de Marca Neón */
+  .facebook-hover:hover {
+    background-color: #1877f2;
+    color: white;
+    border-color: #1877f2;
+    box-shadow: 0 10px 20px -5px rgba(24, 119, 242, 0.5);
+    transform: translateY(-4px) scale(1.1);
+  }
+  .instagram-hover:hover {
+    background: linear-gradient(
+      45deg,
+      #f09433 0%,
+      #e6683c 25%,
+      #dc2743 50%,
+      #cc2366 75%,
+      #bc1888 100%
+    );
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 10px 20px -5px rgba(220, 39, 67, 0.5);
+    transform: translateY(-4px) scale(1.1);
+  }
+  .x-hover:hover {
+    background-color: #000000;
+    color: white;
+    border-color: #ffffff;
+    box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.3);
+    transform: translateY(-4px) scale(1.1);
+  }
+  .linkedin-hover:hover {
+    background-color: #0a66c2;
+    color: white;
+    border-color: #0a66c2;
+    box-shadow: 0 10px 20px -5px rgba(10, 102, 194, 0.5);
+    transform: translateY(-4px) scale(1.1);
+  }
+  .youtube-hover:hover {
+    background-color: #ff0000;
+    color: white;
+    border-color: #ff0000;
+    box-shadow: 0 10px 20px -5px rgba(255, 0, 0, 0.5);
+    transform: translateY(-4px) scale(1.1);
+  }
+  .tiktok-hover:hover {
+    background-color: #000000;
+    color: white;
+    border-color: #fe2c55;
+    box-shadow:
+      -2px -2px 15px rgba(37, 244, 238, 0.4),
+      2px 2px 15px rgba(254, 44, 85, 0.4);
+    transform: translateY(-4px) scale(1.1);
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const emailBtn = document.getElementById("email-copy-button");
+
+    const defaultIcon = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>`;
+    const checkIcon = `<svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M10.854 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0"/><path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1z"/><path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0z"/></svg>`;
+
+    if (emailBtn) {
+      emailBtn.addEventListener("click", async () => {
+        const email = emailBtn.getAttribute("data-email");
+        if (!email) return;
+
+        try {
+          await navigator.clipboard.writeText(email);
+          emailBtn.innerHTML = checkIcon;
+          emailBtn.classList.remove("text-slate-600");
+          emailBtn.classList.add(
+            "text-emerald-600",
+            "bg-emerald-100",
+            "rounded-md",
+          );
+          setTimeout(() => {
+            emailBtn.innerHTML = defaultIcon;
+            emailBtn.classList.add("text-slate-600");
+            emailBtn.classList.remove(
+              "text-emerald-600",
+              "bg-emerald-100",
+              "rounded-md",
+            );
+          }, 2500);
+        } catch (err) {
+          console.error("Error al copiar:", err);
+        }
+      });
+    }
+  });
+</script>

@@ -1,0 +1,91 @@
+---
+// @src/components/organisms/AboutSection.astro
+import { Image } from "astro:assets";
+import { mdToHtml } from "../../utils/markdown";
+
+interface Props {
+  data: {
+    title: string;
+    business_bio: string;
+    image?: any;
+    image_alt?: string;
+    stat_1?: string;
+    stat_1_label?: string;
+    stat_2?: string;
+    stat_2_label?: string;
+  };
+}
+
+const { data } = Astro.props;
+---
+
+<section
+  id="nosotros"
+  class="min-h-dvh flex items-center scroll-mt-20 relative w-full bg-transparent overflow-hidden pb-20"
+>
+  <div
+    class="container mx-auto px-6 flex flex-col md:flex-row gap-8 lg:gap-16 items-center max-w-7xl"
+  >
+    {/* CONTENEDOR DE IMAGEN (Lado Izquierdo) */}
+    <div
+      class="w-full md:w-1/2 flex justify-center md:justify-end relative group"
+    >
+      <div class="relative w-full max-w-[500px]">
+        {
+          data.image && (
+            <Image
+              src={data.image}
+              alt={
+                data.image_alt ||
+                `Perfil de Autoridad - ${data.title.replace(/[*_]/g, "")}`
+              }
+              class="w-full h-auto object-contain"
+            />
+          )
+        }
+      </div>
+    </div>
+
+    {/* CONTENIDO TEXTO (Lado Derecho) */}
+    <div class="w-full md:w-1/2 text-center md:text-left">
+      <h2
+        class="text-3xl lg:text-5xl font-heading font-bold text-white mb-6 [&_p]:inline [&_p]:m-0 [&_strong]:text-neon"
+      >
+        <Fragment set:html={await mdToHtml(data.title)} />
+      </h2>
+
+      <div
+        class="prose prose-invert prose-lg text-slate-400 mb-8 leading-relaxed"
+      >
+        <div set:html={await mdToHtml(data.business_bio)} />
+      </div>
+
+      <div class="grid grid-cols-2 gap-8 border-t border-white/10 pt-8">
+        {
+          data.stat_1 && (
+            <div>
+              <span class="block text-2xl lg:text-3xl font-bold text-neon mb-1 bg-clip-text bg-linear-to-r from-white to-slate-400 animate-shine text-left">
+                {data.stat_1}
+              </span>
+              <span class="text-sm text-slate-500 uppercase tracking-widest font-semibold text-left">
+                {data.stat_1_label || "Experiencia"}
+              </span>
+            </div>
+          )
+        }
+        {
+          data.stat_2 && (
+            <div>
+              <span class="block text-2xl lg:text-3xl font-bold text-neon mb-1 bg-clip-text bg-linear-to-r from-white to-slate-400 animate-shine text-left">
+                {data.stat_2}
+              </span>
+              <span class="text-sm text-slate-500 uppercase tracking-widest font-semibold text-left">
+                {data.stat_2_label || "Confianza"}
+              </span>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</section>

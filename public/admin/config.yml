@@ -1,0 +1,1276 @@
+# @public/admin/config.yml
+# --------------------------------------------------------------------------------
+# CONFIGURACIÓN DEL GESTOR DE CONTENIDOS (DECAP CMS) - A2LT AUTHORITY
+# --------------------------------------------------------------------------------
+backend:
+  name: git-gateway
+  branch: main
+  squash_merges: true
+
+# Permite usar 'npx decap-server' sin errores 404.
+local_backend: true
+
+# Gestión de Archivos Multimedia
+media_folder: "src/assets/uploads" # Dónde se guardan en el repo
+public_folder: "../../assets/uploads" # Dónde los busca el navegador
+site_url: "https://a2lt-authority.netlify.app"
+
+# Branding del Panel Admin (Para el Cliente)
+display_url: "https://a2lt-authority.netlify.app/"
+logo_url: "/images/logo-a2lt-soluciones.webp"
+locale: "es"
+
+# --------------------------------------------------------------------------------
+# COLECCIONES DE CONTENIDO
+# --------------------------------------------------------------------------------
+collections:
+  # -----------------------------------------------------------------
+  # COLECCIÓN 0: AJUSTES GLOBALES
+  # -----------------------------------------------------------------
+  - name: "settings"
+    label: "⚙️ Configuración Global"
+    files:
+      - name: "navigation"
+        label: "🧭 Menú de Navegación"
+        file: "src/content/settings/navigation.yml"
+        fields:
+          - label: "Enlaces del Menú Principal"
+            name: "links"
+            widget: "list"
+            required: false
+            hint: "Si dejas este campo vacío, se usarán los enlaces por defecto (Inicio, Servicios, etc.). Si agregas un enlace con un ID de sección existente, cambiarás su nombre. Si agregas uno 'externo', se sumará al menú."
+            fields:
+              - {
+                  label: "Texto del Enlace",
+                  name: "label",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: El nombre que el usuario verá en el menú (ej: 'Contacto').",
+                }
+              - {
+                  label: "Sección de Destino (ID)",
+                  name: "section_id",
+                  widget: "select",
+                  required: false,
+                  options:
+                    [
+                      { label: "Portada (Inicio)", value: "hero" },
+                      { label: "Servicios", value: "servicios" },
+                      { label: "Knowledge Base", value: "knowledge" },
+                      { label: "Nosotros", value: "nosotros" },
+                      { label: "Casos Clínicos", value: "casos-clinicos" },
+                      { label: "Preguntas Frecuentes", value: "faq" },
+                      { label: "Clientes", value: "clients" },
+                      { label: "Testimonios", value: "testimonials" },
+                      { label: "Contacto (Footer)", value: "contact" },
+                    ],
+                  default: "hero",
+                  hint: "A2LT UX: Selecciona a qué parte de la página saltará el usuario al hacer clic.",
+                }
+              - {
+                  label: "Es enlace externo?",
+                  name: "is_external",
+                  widget: "boolean",
+                  default: false,
+                  required: false,
+                  hint: "A2LT UX: Actívalo si el enlace lleva a otra web (ej: Instagram) en lugar de una sección interna.",
+                }
+              - {
+                  label: "URL Externa (Solo si es externo)",
+                  name: "external_url",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: Ej: https://instagram.com/vitaclinic. No olvides el https://",
+                }
+
+          - label: "Botón de Acción (Navbar)"
+            name: "action_button"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Texto",
+                  name: "label",
+                  widget: "string",
+                  default: "WhatsApp",
+                  required: false,
+                  hint: "A2LT UX: Texto que aparecerá en el botón destacado de la derecha en el menú (ej: 'Agendar ahora').",
+                }
+              - {
+                  label: "Enlace",
+                  name: "url",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: URL o #ID de sección de destino para el botón de acción.",
+                }
+              - {
+                  label: "Usar WhatsApp del Footer?",
+                  name: "use_whatsapp",
+                  widget: "boolean",
+                  default: false,
+                  required: false,
+                  hint: "A2LT UX: Si está activo, el botón abrirá el chat de WhatsApp configurado en la sección de Contacto.",
+                }
+          - label: "📱 CTA Flotante Móvil"
+            name: "sticky_cta"
+            widget: "object"
+            required: false
+            fields:
+              - {
+                  label: "Habilitar",
+                  name: "enabled",
+                  widget: "boolean",
+                  default: false,
+                  hint: "A2LT UX: Activa el botón flotante en la parte inferior de la pantalla en móvil. Solo visible en viewports < 768px.",
+                }
+              - {
+                  label: "Texto del Botón",
+                  name: "label",
+                  widget: "string",
+                  default: "Evalúa tu caso por WhatsApp",
+                  hint: "A2LT UX: Máx 35 caracteres para que quepa en una línea en móvil.",
+                }
+              - {
+                  label: "Enlace / Número WhatsApp",
+                  name: "link",
+                  widget: "string",
+                  hint: "A2LT UX: Solo números con código de país, sin +, espacios ni guiones. Ej: 584121234567. Se convierte automáticamente en https://wa.me/",
+                }
+              - {
+                  label: "Ícono",
+                  name: "icon",
+                  widget: "select",
+                  options: ["whatsapp", "phone", "calendar"],
+                  hint: "A2LT UX: 'whatsapp' muestra el ícono de WhatsApp. 'phone' muestra teléfono. 'calendar' muestra agenda.",
+                }
+  # -----------------------------------------------------------------
+  # COLECCIÓN 1: PÁGINAS ESTRUCTURALES (Archivos Únicos)
+  # -----------------------------------------------------------------
+  - name: "pages"
+    label: "⚙️ Páginas del Sitio"
+    files:
+      # --- 1.1 HOME (Authority) ---
+      - name: "home"
+        label: "🏠 Página de Inicio (Authority)"
+        file: "src/content/pages/home.md"
+        fields:
+          # PANEL DE CONTROL (FIJO AL INICIO)
+          - label: "🎛️ Panel de Control (Visibilidad)"
+            name: "modules"
+            widget: "object"
+            required: false
+            collapsed: false
+            hint: "Usa estos interruptores para ocultar secciones temporalmente sin borrar su contenido."
+            fields:
+              - {
+                  label: "1. Mostrar Hero (Portada)",
+                  name: "show_hero",
+                  widget: "boolean",
+                  default: true,
+                  hint: "A2LT UX: Controla si se ve la cabecera principal de la página.",
+                }
+              - {
+                  label: "2. Mostrar Servicios",
+                  name: "show_services",
+                  widget: "boolean",
+                  default: true,
+                  hint: "A2LT UX: Muestra u oculta la grilla de tratamientos/servicios.",
+                }
+              - {
+                  label: "3. Mostrar Knowledge Base",
+                  name: "show_knowledge",
+                  widget: "boolean",
+                  default: true,
+                  hint: "A2LT UX: Muestra u oculta la sección de artículos médicos.",
+                }
+              - {
+                  label: "4. Mostrar Casos Clínicos",
+                  name: "show_casos_clinicos",
+                  widget: "boolean",
+                  default: true,
+                  hint: "A2LT UX: Muestra el slider de Antes/Después.",
+                }
+              - {
+                  label: "5. Mostrar Nosotros",
+                  name: "show_about",
+                  widget: "boolean",
+                  default: true,
+                  hint: "A2LT UX: Muestra la sección de filosofía y equipo médico.",
+                }
+              - {
+                  label: "6. Mostrar Clientes",
+                  name: "show_clients",
+                  widget: "boolean",
+                  default: false,
+                  hint: "A2LT UX: Muestra los logos de aliados y colaboradores.",
+                }
+              - {
+                  label: "7. Mostrar Testimonios",
+                  name: "show_testimonials",
+                  widget: "boolean",
+                  default: false,
+                  hint: "A2LT UX: Muestra las opiniones de los pacientes.",
+                }
+              - {
+                  label: "8. Mostrar FAQ",
+                  name: "show_faq",
+                  widget: "boolean",
+                  default: true,
+                  hint: "A2LT UX: Muestra la sección de preguntas frecuentes al final.",
+                }
+
+          # IDENTIDAD & SEO
+          - label: "🌏 Identidad & SEO (Vital para Google)"
+            name: "seo"
+            widget: "object"
+            required: false
+            collapsed: true
+            hint: "Esta información es invisible en el diseño, pero es lo que Google lee para posicionarte."
+            fields:
+              - {
+                  label: "Nombre del Negocio / Marca",
+                  name: "site_name",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: El nombre oficial de la clínica. Se usa en títulos y pies de página.",
+                }
+              - {
+                  label: "Meta Título (Título en Google)",
+                  name: "meta_title",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: El título azul que aparece en Google. Rec: menos de 60 caracteres.",
+                }
+              - {
+                  label: "Meta Descripción (Resumen)",
+                  name: "meta_description",
+                  widget: "text",
+                  required: false,
+                  hint: "A2LT UX: Breve resumen persuasivo de la clínica para los resultados de búsqueda. Rec: menos de 155 caracteres.",
+                }
+              - {
+                  label: "Imagen Social (WhatsApp/Redes)",
+                  name: "social_image",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: Imagen para previsualización en WhatsApp y redes (OpenGraph). Rec: 1200x630px. Formato: WEBP o JPG.",
+                }
+              - {
+                  label: "Alt Imagen Social",
+                  name: "social_image_alt",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: Describe la imagen para accesibilidad. Ej: 'Staff de VitaClinic en el quirófano'.",
+                }
+              - {
+                  label: "Favicon (Icono de Pestaña)",
+                  name: "favicon",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: El pequeño icono que aparece en la pestaña del navegador. Rec: 512x512px. Formato: PNG transparente o SVG.",
+                }
+
+          # 1. HERO
+          - label: "1. 🚀 Pantalla Principal (Hero)"
+            name: "hero"
+            widget: "object"
+            required: false
+            collapsed: false
+            fields:
+              - {
+                  label: "🎨 Fondo: Imagen o Color",
+                  name: "bg_variant",
+                  widget: "select",
+                  options:
+                    [
+                      { label: "Imagen", value: "image" },
+                      { label: "Color", value: "color" },
+                    ],
+                  default: "image",
+                  hint: "A2LT UX: ¿Quieres una foto de fondo o un color sólido en la portada?",
+                }
+              - {
+                  label: "Color de Fondo (Opcional)",
+                  name: "bg_color",
+                  widget: "color",
+                  required: false,
+                  default: "#111827",
+                  hint: "A2LT UX: Solo si seleccionaste 'Color' arriba.",
+                }
+              - {
+                  label: "Imagen Portada (Desktop)",
+                  name: "image",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: Imagen impactante para pantallas de laptop/monitor. Rec: 1920x1080px. Formato: WEBP. Calidad premium.",
+                }
+              - {
+                  label: "Imagen Portada (Móvil)",
+                  name: "image_mobile",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: Recorte vertical optimizado para smartphones. Rec: 800x1200px. Formato: WEBP.",
+                }
+              - {
+                  label: "Alt de la Imagen",
+                  name: "image_alt",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: Texto descriptivo de la foto de portada para Google.",
+                }
+              - {
+                  label: "Titular (H1)",
+                  name: "title",
+                  widget: "markdown",
+                  required: false,
+                  hint: "A2LT UX: El mensaje más importante. Usa ** para resaltar palabras clave en color neon.",
+                }
+              - {
+                  label: "Subtítulo / Bajada",
+                  name: "subtitle",
+                  widget: "markdown",
+                  required: false,
+                  hint: "A2LT UX: Refuerza el titular con una frase persuasiva.",
+                }
+              - {
+                  label: "Texto del Botón",
+                  name: "cta_text",
+                  widget: "string",
+                  default: "Agenda tu Evaluación",
+                  hint: "A2LT UX: Frase de acción corta (ej: 'Comenzar', 'Ver Catálogo').",
+                }
+              - {
+                  label: "Enlace del Botón",
+                  name: "cta_link",
+                  widget: "string",
+                  default: "#contact",
+                  hint: "A2LT UX: ID de sección (ej: #servicios) o enlace externo.",
+                }
+
+          # 2. SERVICIOS
+          - label: "2. 🛠️ Sección Servicios (Home)"
+            name: "services_section"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Título de Sección",
+                  name: "title",
+                  widget: "markdown",
+                  default: "Nuestros Servicios",
+                }
+              - {
+                  label: "Subtítulo de Sección",
+                  name: "subtitle",
+                  widget: "markdown",
+                  hint: "A2LT UX: Breve introducción a la sección de servicios.",
+                }
+              - {
+                  label: "Imagen de Autoridad (Lado Texto)",
+                  name: "section_image",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: Foto corporativa o de tratamiento que acompaña a los servicios. Rec: 800x1000px. Formato: WEBP con fondo transparente.",
+                }
+              - {
+                  label: "Alt Imagen de Autoridad",
+                  name: "section_image_alt",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: Describe qué aparece en la foto lateral de servicios.",
+                }
+              - {
+                  label: "Servicios a mostrar (Si vacío, muestra todos)",
+                  name: "highlighted_list",
+                  widget: "relation",
+                  collection: "services",
+                  search_fields: ["title"],
+                  value_field: "title",
+                  display_fields: ["title"],
+                  multiple: true,
+                  required: false,
+                }
+
+          # 3. KNOWLEDGE
+          - label: "3. 🧠 Sección Knowledge (Home)"
+            name: "knowledge_section"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Título de Sección",
+                  name: "title",
+                  widget: "markdown",
+                  default: "Publicaciones Médicas",
+                }
+              - {
+                  label: "Subtítulo de Sección",
+                  name: "subtitle",
+                  widget: "markdown",
+                  hint: "A2LT UX: Describe el valor educativo de tus publicaciones.",
+                }
+              - {
+                  label: "Artículos a mostrar (Si vacío, muestra todos)",
+                  name: "highlighted_list",
+                  widget: "relation",
+                  collection: "knowledge",
+                  search_fields: ["title"],
+                  value_field: "title",
+                  display_fields: ["title"],
+                  multiple: true,
+                  required: false,
+                }
+
+          # 4. CASOS CLÍNICOS
+          - label: "4. ✨ Sección Casos Clínicos (Home)"
+            name: "casos_clinicos_section"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Mini Título (Arriba)",
+                  name: "pre_title",
+                  widget: "string",
+                  default: "Nuestra Excelencia",
+                }
+              - {
+                  label: "Título Principal",
+                  name: "title",
+                  widget: "markdown",
+                  default: "Casos Clínicos Reales",
+                }
+              - {
+                  label: "Subtítulo",
+                  name: "subtitle",
+                  widget: "markdown",
+                  hint: "A2LT UX: Frase que invita a ver los resultados reales de los pacientes.",
+                }
+
+          # 5. NOSOTROS (ABOUT)
+          - label: "5. 🏥 Nosotros / Filosofía Médica"
+            name: "about"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Título de Sección",
+                  name: "title",
+                  widget: "markdown",
+                  default: "Nuestra Filosofía",
+                }
+              - {
+                  label: "Fotografía Principal (Nosotros)",
+                  name: "image",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: Imagen representativa de la clínica o del especialista. Rec: 800x800px (Cuadrada). Formato: WEBP.",
+                }
+              - {
+                  label: "Alt Imagen",
+                  name: "image_alt",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: Descripción de la foto principal de 'Nosotros'.",
+                }
+              - {
+                  label: "Descripción / Bio",
+                  name: "business_bio",
+                  widget: "markdown",
+                  required: false,
+                  hint: "A2LT UX: Cuenta la historia y valores de la clínica. Usa ** para resaltar.",
+                }
+              - {
+                  label: "Dato 1 (Ej: +10 Años)",
+                  name: "stat_1",
+                  widget: "string",
+                  hint: "A2LT UX: El número o cifra impactante.",
+                }
+              - {
+                  label: "Etiqueta Dato 1",
+                  name: "stat_1_label",
+                  widget: "string",
+                  hint: "A2LT UX: El texto que acompaña a la cifra (ej: 'de experiencia').",
+                }
+              - {
+                  label: "Dato 2 (Ej: Casos Éxito)",
+                  name: "stat_2",
+                  widget: "string",
+                  hint: "A2LT UX: Segunda cifra de autoridad.",
+                }
+              - {
+                  label: "Etiqueta Dato 2",
+                  name: "stat_2_label",
+                  widget: "string",
+                  hint: "A2LT UX: Descripción de la segunda cifra.",
+                }
+
+          # 6. CLIENTES
+          - label: "6. 🤝 Cartera de Clientes / Logos"
+            name: "clients_section"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Título de Sección",
+                  name: "title",
+                  widget: "string",
+                  default: "Confían en Nosotros",
+                  required: false,
+                  hint: "A2LT UX: Título para la grilla de logos de clientes/aliados.",
+                }
+          - label: "Logos de Clientes"
+            name: "clients"
+            widget: "list"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Logo de Marca/Colaborador",
+                  name: "logo",
+                  widget: "image",
+                  hint: "A2LT UX: Logo de aliado médico o comercial. Rec: 400x200px. Formato: PNG transparente o SVG.",
+                }
+              - {
+                  label: "Alt Logo",
+                  name: "logo_alt",
+                  widget: "string",
+                  hint: "A2LT UX: Nombre comercial del aliado para SEO.",
+                }
+              - {
+                  label: "Nombre Cliente",
+                  name: "name",
+                  widget: "string",
+                  hint: "A2LT UX: Solo para referencia interna en el CMS.",
+                }
+
+          # 7. TESTIMONIOS
+          - label: "7. ⭐ Sección Testimonios (Home)"
+            name: "testimonials_section"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Título de Sección",
+                  name: "title",
+                  widget: "markdown",
+                  default: "Opiniones Reales",
+                }
+              - {
+                  label: "Subtítulo de Sección",
+                  name: "subtitle",
+                  widget: "markdown",
+                  hint: "A2LT UX: Texto que precede a los testimonios (ej: 'Lo que dicen quienes ya confiaron').",
+                }
+
+          # 8. FAQ
+          - label: "8. ❓ Preguntas Frecuentes (FAQ)"
+            name: "faq_section"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Título de Sección",
+                  name: "title",
+                  widget: "markdown",
+                  default: "Preguntas Frecuentes",
+                  hint: "A2LT UX: Título de la sección de dudas comunes.",
+                }
+          - label: "Lista de Preguntas"
+            name: "faq"
+            widget: "list"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Pregunta",
+                  name: "question",
+                  widget: "string",
+                  hint: "A2LT UX: Redacta la duda del paciente (ej: '¿Duele el tratamiento?').",
+                }
+              - {
+                  label: "Respuesta",
+                  name: "answer",
+                  widget: "text",
+                  hint: "A2LT UX: Proporciona una respuesta clara y tranquilizadora.",
+                }
+
+          # 9. FOOTER
+          - label: "9. 📞 Contacto & Pie de Página"
+            name: "contact"
+            widget: "object"
+            required: false
+            collapsed: true
+            fields:
+              - {
+                  label: "Título de Cierre",
+                  name: "heading",
+                  widget: "markdown",
+                  hint: "A2LT UX: Último mensaje antes del pie de página.",
+                }
+              - {
+                  label: "Subtítulo de Cierre",
+                  name: "subheading",
+                  widget: "markdown",
+                  hint: "A2LT UX: Frase final de despedida o invitación al contacto.",
+                }
+              - {
+                  label: "Logotipo para Footer",
+                  name: "footer_logo",
+                  widget: "image",
+                  hint: "A2LT UX: Versión del logo optimizada para el fondo pastel del pie de página. Rec: 400x150px. Formato: PNG transparente.",
+                }
+              - {
+                  label: "Alt Logo Footer",
+                  name: "footer_logo_alt",
+                  widget: "string",
+                  hint: "A2LT UX: Descripción del logo en el pie de página.",
+                }
+              - {
+                  label: "Email Corporativo",
+                  name: "email",
+                  widget: "string",
+                  hint: "A2LT UX: Correo electrónico de contacto oficial.",
+                }
+              - {
+                  label: "Teléfono / WhatsApp",
+                  name: "phone",
+                  widget: "string",
+                  hint: "A2LT UX: Solo números con código (ej: 56912345678). Se usará para el botón de WhatsApp.",
+                }
+              - {
+                  label: "Dirección",
+                  name: "address",
+                  widget: "string",
+                  hint: "A2LT UX: Ubicación física de la consulta médica.",
+                }
+              - {
+                  label: "Link Google Maps (GPS)",
+                  name: "google_maps_link",
+                  widget: "string",
+                  required: false,
+                  hint: "A2LT UX: Pega aquí el enlace de compartir de Google Maps. Útil para que los clientes lleguen vía GPS.",
+                }
+              - label: "Redes Sociales"
+                name: "social"
+                widget: "object"
+                collapsed: true
+                fields:
+                  - {
+                      label: "Facebook",
+                      name: "facebook",
+                      widget: "string",
+                      required: false,
+                      hint: "A2LT UX: URL completa de tu página de Facebook.",
+                    }
+                  - {
+                      label: "Instagram",
+                      name: "instagram",
+                      widget: "string",
+                      required: false,
+                      hint: "A2LT UX: URL completa de tu perfil de Instagram.",
+                    }
+                  - {
+                      label: "LinkedIn",
+                      name: "linkedin",
+                      widget: "string",
+                      required: false,
+                      hint: "A2LT UX: URL de tu perfil profesional o de empresa.",
+                    }
+                  - {
+                      label: "TikTok",
+                      name: "tiktok",
+                      widget: "string",
+                      required: false,
+                      hint: "A2LT UX: URL de tu canal de TikTok.",
+                    }
+                  - {
+                      label: "YouTube",
+                      name: "youtube",
+                      widget: "string",
+                      required: false,
+                      hint: "A2LT UX: URL de tu canal de vídeos.",
+                    }
+                  - {
+                      label: "X (Twitter)",
+                      name: "twitter",
+                      widget: "string",
+                      required: false,
+                    }
+              - {
+                  label: "Legal / Copyright",
+                  name: "copyright",
+                  widget: "string",
+                }
+
+      # --- 1.2 PÁGINA ÍNDICE DE SERVICIOS ---
+      - name: "services_index"
+        label: "🛠️ Config. Página Servicios"
+        file: "src/content/pages/services.md"
+        fields:
+          - {
+              label: "Título Principal (H1)",
+              name: "title",
+              widget: "string",
+              default: "Soluciones Tecnológicas",
+              required: false,
+              hint: "El encabezado H1 de la página de servicios.",
+            }
+          - {
+              label: "Subtítulo / Bajada",
+              name: "subtitle",
+              widget: "text",
+              default: "Ingeniería de precisión.",
+              required: false,
+              hint: "A2LT UX: Frase de apoyo que explica la propuesta de valor de tus servicios en la página principal del catálogo.",
+            }
+          - {
+              label: "Imagen de Fondo de Cabecera",
+              name: "hero_bg",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Fondo para la parte superior de la página de servicios. Rec: 1920x600px (Panorámica). Formato: WEBP.",
+            }
+          - label: "🚀 SEO Página Servicios"
+            name: "seo"
+            widget: "object"
+            required: false
+            collapsed: true
+            hint: "Optimización específica para esta página."
+            fields:
+              - {
+                  label: "Meta Título",
+                  name: "meta_title",
+                  widget: "string",
+                  default: "Nuestros Servicios | A2LT",
+                  required: false,
+                  hint: "Lo que se ve en la pestaña y Google.",
+                }
+              - {
+                  label: "Meta Descripción",
+                  name: "meta_description",
+                  widget: "text",
+                  required: false,
+                  hint: "A2LT UX: Resumen persuasivo para Google (máx 155 caracteres).",
+                }
+              - {
+                  label: "Imagen Social (Catálogo)",
+                  name: "social_image",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: Imagen para compartir el listado de servicios en redes sociales. Rec: 1200x630px. Formato: WEBP/JPG.",
+                }
+
+      # --- 1.3 PÁGINA ÍNDICE DE KNOWLEDGE BASE ---
+      - name: "knowledge_index"
+        label: "🧠 Config. Página Knowledge"
+        file: "src/content/pages/knowledge.md"
+        fields:
+          - {
+              label: "Título Principal (H1)",
+              name: "title",
+              widget: "markdown",
+              default: "Knowledge Base",
+              required: false,
+              hint: "Título: Proyectos, Blog, Casos de Estudio...",
+            }
+          - {
+              label: "Subtítulo",
+              name: "subtitle",
+              widget: "markdown",
+              default: "Nuestra experiencia aplicada.",
+              required: false,
+              hint: "A2LT UX: Explica qué valor encontrará el usuario en esta biblioteca de conocimiento.",
+            }
+          - {
+              label: "Imagen de Cabecera (Revista)",
+              name: "hero_bg",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Fondo panorámico para el encabezado de la revista médica. Rec: 1920x600px. Formato: WEBP.",
+            }
+          - label: "🚀 SEO Página Knowledge"
+            name: "seo"
+            widget: "object"
+            required: false
+            collapsed: true
+            hint: "Optimización SEO para la base de conocimiento."
+            fields:
+              - {
+                  label: "Meta Título",
+                  name: "meta_title",
+                  widget: "string",
+                  default: "Proyectos y Artículos | A2LT",
+                  required: false,
+                  hint: "A2LT UX: Título SEO para la revista médica (máx 60 caracteres).",
+                }
+              - {
+                  label: "Meta Descripción",
+                  name: "meta_description",
+                  widget: "text",
+                  required: false,
+                  hint: "Describe el valor educativo de tu contenido.",
+                }
+              - {
+                  label: "Imagen Social (Revista Médica)",
+                  name: "social_image",
+                  widget: "image",
+                  required: false,
+                  hint: "A2LT UX: Imagen para previsualización de la revista médica en redes. Rec: 1200x630px. Formato: WEBP.",
+                }
+
+  # -----------------------------------------------------------------
+  # COLECCIÓN 2: SERVICIOS (ITEMS INDIVIDUALES)
+  # -----------------------------------------------------------------
+  - name: "services"
+    label: "🛠️ Catálogo de Servicios"
+    label_singular: "Servicio"
+    folder: "src/content/services"
+    create: true
+    slug: "{{slug}}"
+    clean_accents: true
+    fields:
+      - {
+          label: "Nombre del Servicio",
+          name: "title",
+          widget: "string",
+          required: false,
+          hint: "El nombre comercial de lo que vendes. Ej: 'Cableado Estructurado'.",
+        }
+      - {
+          label: "Imagen Principal (Servicio)",
+          name: "main_image",
+          widget: "image",
+          required: false,
+          hint: "A2LT UX: Imagen representativa que aparece en la tarjeta y en la cabecera. Rec: 1920x1080px. Formato: WEBP.",
+        }
+      - {
+          label: "Alt Imagen Principal",
+          name: "main_image_alt",
+          widget: "string",
+          required: false,
+          hint: "Crucial para SEO. Describe la imagen.",
+        }
+      - {
+          label: "Resumen Comercial",
+          name: "description",
+          widget: "text",
+          required: false,
+          hint: "Breve texto que invita al clic. Aparece en la tarjeta del servicio.",
+        }
+      # ESTRUCTURA EN Z
+      - label: "📖 Detalles y Contenido (Diseño en Z)"
+        name: "content_blocks"
+        widget: "object"
+        required: false
+        collapsed: false
+        hint: "Estructura el contenido alternando texto e imagen para una lectura fluida."
+        fields:
+          - {
+              label: "Bloque 1: Texto",
+              name: "p1_content",
+              widget: "markdown",
+              required: false,
+              hint: "Primer párrafo detallado. Describe el problema.",
+            }
+          - {
+              label: "Fotografía Bloque 1",
+              name: "p1_image",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Imagen lateral derecha para dar soporte visual al texto. Rec: 800x600px. Formato: WEBP.",
+            }
+          - {
+              label: "Alt Imagen 1",
+              name: "p1_image_alt",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Bloque 2: Texto",
+              name: "p2_text",
+              widget: "markdown",
+              required: false,
+              hint: "Segundo párrafo. Describe tu solución.",
+            }
+          - {
+              label: "Fotografía Bloque 2",
+              name: "p2_image",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Imagen lateral izquierda para alternar el diseño en Z. Rec: 800x600px. Formato: WEBP.",
+            }
+          - {
+              label: "Alt Imagen 2",
+              name: "p2_image_alt",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Bloque 3: Texto",
+              name: "p3_text",
+              widget: "markdown",
+              required: false,
+              hint: "Tercer párrafo. Beneficios o cierre.",
+            }
+          - {
+              label: "Fotografía Bloque 3",
+              name: "p3_image",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Imagen para el tercer bloque. Rec: 800x600px. Formato: WEBP/PNG.",
+            }
+          - {
+              label: "Alt Imagen 3",
+              name: "p3_image_alt",
+              widget: "string",
+              required: false,
+            }
+          - {
+              label: "Conclusiones",
+              name: "conclusion",
+              widget: "markdown",
+              required: false,
+              hint: "Texto final de cierre sin imagen lateral.",
+            }
+      - {
+          label: "Precio / Desde",
+          name: "price",
+          widget: "string",
+          required: false,
+          hint: "Ej: 'Desde $100' o 'Consultar Precio'.",
+        }
+      - {
+          label: "Orden de Prioridad",
+          name: "order",
+          widget: "number",
+          default: 0,
+          value_type: "int",
+          required: false,
+          hint: "A2LT UX: 1 para el primero, 2 para el segundo...",
+        }
+      - {
+          label: "Categoría",
+          name: "category",
+          widget: "select",
+          options: ["Facial", "Corporal", "Bienestar", "Preventivo"],
+          required: false,
+          hint: "A2LT UX: Ayuda a organizar el catálogo por tipo de tratamiento.",
+        }
+
+  # -----------------------------------------------------------------
+  # COLECCIÓN 3: KNOWLEDGE BASE (ITEMS INDIVIDUALES)
+  # -----------------------------------------------------------------
+  - name: "knowledge"
+    label: "🧠 Knowledge Base (Items)"
+    label_singular: "Contenido"
+    folder: "src/content/knowledge"
+    create: true
+    slug: "{{slug}}"
+    clean_accents: true
+    fields:
+      - {
+          label: "Título del Contenido",
+          name: "title",
+          widget: "string",
+          required: false,
+          hint: "Título del proyecto, artículo o asesoría.",
+        }
+      - {
+          label: "Imagen de Fondo",
+          name: "main_image",
+          widget: "image",
+          required: false,
+          hint: "Fondo del Hero e imagen de tarjeta. Rec: 1920x1080px.",
+        }
+      - {
+          label: "Alt Imagen Principal",
+          name: "main_image_alt",
+          widget: "string",
+          required: false,
+          hint: "Descripción SEO de la imagen.",
+        }
+      - {
+          label: "Resumen",
+          name: "description",
+          widget: "text",
+          required: false,
+          hint: "Intro corta que aparece en el listado.",
+        }
+      # ESTRUCTURA EN Z
+      - label: "📖 Cuerpo del Contenido (Diseño en Z)"
+        name: "content_blocks"
+        widget: "object"
+        required: false
+        collapsed: false
+        hint: "Redacta tu caso de estudio o artículo aquí."
+        fields:
+          - {
+              label: "Bloque 1: Título",
+              name: "p1_title",
+              widget: "string",
+              required: false,
+              hint: "A2LT UX: Título corto para el primer bloque de contenido.",
+            }
+          - {
+              label: "Bloque 1: Contenido",
+              name: "p1_content",
+              widget: "markdown",
+              required: false,
+              hint: "A2LT UX: Primeros 2-3 párrafos del artículo. Usa ** para resaltar.",
+            }
+          - label: "Bloque 1: Tipo de Media"
+            name: "p1_media_type"
+            widget: "select"
+            options: ["image", "video"]
+            default: "image"
+            required: false
+          - {
+              label: "Imagen Bloque 1",
+              name: "p1_image",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Imagen de apoyo para el primer tramo del artículo. Rec: 800x600px. Formato: WEBP.",
+            }
+          - {
+              label: "Bloque 1: URL Video (YouTube)",
+              name: "p1_video_url",
+              widget: "string",
+              required: false,
+              hint: "Ej: https://www.youtube.com/watch?v=...",
+            }
+          - {
+              label: "Bloque 2: Texto",
+              name: "p2_text",
+              widget: "markdown",
+              required: false,
+              hint: "A2LT UX: Segundo bloque de texto. Desarrolla la idea principal.",
+            }
+          - {
+              label: "Imagen Bloque 2",
+              name: "p2_image",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Segunda imagen de apoyo (lateral). Rec: 800x600px. Formato: WEBP.",
+            }
+          - {
+              label: "Alt Imagen 2",
+              name: "p2_image_alt",
+              widget: "string",
+              required: false,
+              hint: "A2LT UX: Descripción SEO de la segunda imagen del bloque.",
+            }
+          - {
+              label: "Bloque 3: Texto",
+              name: "p3_text",
+              widget: "markdown",
+              required: false,
+              hint: "A2LT UX: Tercer bloque de texto para profundizar o cerrar el tema.",
+            }
+          - {
+              label: "Imagen Bloque 3",
+              name: "p3_image",
+              widget: "image",
+              required: false,
+              hint: "A2LT UX: Tercera imagen de apoyo para el cierre. Rec: 800x600px. Formato: WEBP.",
+            }
+          - {
+              label: "Alt Imagen 3",
+              name: "p3_image_alt",
+              widget: "string",
+              required: false,
+              hint: "A2LT UX: Descripción SEO de la tercera imagen del bloque.",
+            }
+          - {
+              label: "Conclusiones",
+              name: "conclusion",
+              widget: "markdown",
+              required: false,
+              hint: "A2LT UX: Resumen final y llamada a la acción del artículo.",
+            }
+      - {
+          label: "Categoría",
+          name: "category",
+          widget: "select",
+          options: ["Proyecto", "Artículo", "Asesoría"],
+          required: false,
+          hint: "Ayuda a filtrar el contenido para el usuario.",
+        }
+      - {
+          label: "Orden",
+          name: "order",
+          widget: "number",
+          default: 0,
+          value_type: "int",
+          required: false,
+          hint: "A2LT UX: 1 para el primero, 2 para el segundo...",
+        }
+
+  # -----------------------------------------------------------------
+  # COLECCIÓN 4: TESTIMONIOS
+  # -----------------------------------------------------------------
+  - name: "testimonials"
+    label: "⭐ Testimonios"
+    label_singular: "Testimonio"
+    folder: "src/content/testimonials"
+    create: true
+    slug: "{{slug}}"
+    clean_accents: true
+    fields:
+      - {
+          label: "Nombre del Cliente",
+          name: "author",
+          widget: "string",
+          required: false,
+          hint: "Persona real que da el testimonio.",
+        }
+      - {
+          label: "Cargo / Empresa",
+          name: "role",
+          widget: "string",
+          required: false,
+          hint: "Ej: CEO de Tech Corp. Aporta credibilidad.",
+        }
+      - {
+          label: "Testimonio",
+          name: "content",
+          widget: "text",
+          required: false,
+          hint: "Cita textual. Máx 600 caracteres.",
+        }
+      - {
+          label: "Foto del Paciente (Avatar)",
+          name: "avatar",
+          widget: "image",
+          required: false,
+          hint: "A2LT UX: Fotografía del paciente para generar autoridad. Rec: 400x400px (Cuadrada). Formato: WEBP o JPG.",
+        }
+      - {
+          label: "Link del Cliente (Opcional)",
+          name: "client_link",
+          widget: "string",
+          required: false,
+          hint: "A2LT UX: URL del sitio web o perfil social del cliente.",
+        }
+      - {
+          label: "Orden",
+          name: "order",
+          widget: "number",
+          value_type: "int",
+          default: 1,
+          hint: "A2LT UX: Prioridad de visualización (1 es el primero en la fila).",
+        }
+
+  # -----------------------------------------------------------------
+  # COLECCIÓN 5: CASOS CLÍNICOS
+  # -----------------------------------------------------------------
+  - name: "casos-clinicos"
+    label: "✨ Casos Clínicos (Antes & Después)"
+    label_singular: "Caso"
+    folder: "src/content/casos-clinicos"
+    create: true
+    slug: "{{slug}}"
+    clean_accents: true
+    fields:
+      - {
+          label: "Título del Caso",
+          name: "title",
+          widget: "string",
+          hint: "A2LT UX: Ej: 'Armonización Facial — Paciente 34 años'. No incluir nombre real del paciente.",
+        }
+      - {
+          label: "Descripción SEO",
+          name: "description",
+          widget: "text",
+          hint: "A2LT UX: Máx 155 caracteres. Describe el procedimiento y resultado sin datos personales.",
+        }
+      - {
+          label: "Estado: ANTES",
+          name: "image_before",
+          widget: "image",
+          hint: "A2LT UX: Punto de partida del caso clínico. Encuadre controlado. Rec: 800x1000px. Formato: WEBP.",
+        }
+      - {
+          label: "Estado: DESPUÉS",
+          name: "image_after",
+          widget: "image",
+          hint: "A2LT UX: Resultado del tratamiento. Debe replicar el encuadre del 'Antes'. Rec: 800x1000px. Formato: WEBP.",
+        }
+      - {
+          label: "Procedimiento",
+          name: "procedure",
+          widget: "string",
+          hint: "A2LT UX: Ej: 'Toxina Botulínica + Ácido Hialurónico'. Aparece como etiqueta en la tarjeta.",
+        }
+      - {
+          label: "Orden de aparición",
+          name: "order",
+          widget: "number",
+          default: 1,
+          hint: "A2LT UX: Posición en el slider de casos clínicos.",
+        }
+      - {
+          label: "Publicado",
+          name: "is_published",
+          widget: "boolean",
+          default: true,
+          hint: "A2LT UX: Activa este toggle para mostrar este caso en el sitio. Si lo desactivas, quedará en borrador.",
+        }
+
+  # -----------------------------------------------------------------
+  # COLECCIÓN 6: LEGALES
+  # -----------------------------------------------------------------
+  - name: "legal"
+    label: "⚖️ Páginas Legales"
+    files:
+      - label: "Aviso Legal"
+        name: "aviso-legal"
+        file: "src/content/legal/aviso-legal.md"
+        fields:
+          - {
+              label: "Título",
+              name: "title",
+              widget: "string",
+              default: "Aviso Legal",
+            }
+          - {
+              label: "Última actualización",
+              name: "updated",
+              widget: "datetime",
+              hint: "A2LT UX: Fecha de la última revisión legal. Aparece visible en la página para cumplimiento GDPR.",
+            }
+          - {
+              label: "Contenido",
+              name: "body",
+              widget: "markdown",
+              hint: "A2LT UX: Redacta o pega aquí el aviso legal. Usa ** para resaltar términos clave en color acento.",
+            }
+      - label: "Política de Privacidad"
+        name: "politica-privacidad"
+        file: "src/content/legal/politica-privacidad.md"
+        fields:
+          - {
+              label: "Título",
+              name: "title",
+              widget: "string",
+              default: "Política de Privacidad",
+            }
+          - {
+              label: "Última actualización",
+              name: "updated",
+              widget: "datetime",
+              hint: "A2LT UX: Fecha de la última revisión. Requerida por GDPR.",
+            }
+          - {
+              label: "Contenido",
+              name: "body",
+              widget: "markdown",
+              hint: "A2LT UX: Cuerpo legal de la página. Mantén un tono formal.",
+            }

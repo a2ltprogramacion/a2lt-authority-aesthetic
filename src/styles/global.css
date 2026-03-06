@@ -1,0 +1,621 @@
+/* @src/styles/global.css */
+@import url("https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=Raleway:wght@300;400;600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Raleway", sans-serif;
+  --font-heading: "Bodoni Moda", serif;
+
+  /* FONDO: Clínico Claro y Pastel (Serenidad Femenina) */
+  --color-primary: #ffffff;
+  --color-background: #ffffff; /* Base súper clara y nítida */
+  --color-surface: #ffffff; /* Blanco puro para tarjetas */
+  --color-footer: #fff0f5; /* Rosa pastel muy suave */
+
+  /* TEXTO: Pizarra Profundo (Legibilidad premium en fondo cálido) */
+  --color-text: #0f172a; /* slate-900: más profundo pero no negro */
+  --color-text-muted: #475569; /* slate-600: mejor contraste para textos secundarios */
+
+  /* LA FIRMA: Rosa VitaClinic (#f55c7a) */
+  --color-neon: #f55c7a; /* Rosa base */
+  --color-neon-glow: rgba(245, 92, 122, 0.45);
+
+  /* ACENTO: Salmón/Coral Suave (#f57c73) */
+  --color-platinum: #4D4D59; /* slate-600 para textos clickeables suaves */
+  --color-accent: #f57c73; /* Coral para líneas de menú */
+
+  /* Compatibilidad Legacy */
+  --color-silver-dark: #94a3b8;
+  --color-silver-mid: #cbd5e1;
+  --color-silver-light: #f1f5f9;
+  --color-secondary: #475569; /* slate-600 */
+
+  /* DORADO DE AUTORIDAD A2LT (Ajustado a la paleta #f6bc66) */
+  --color-gold: #f6bc66;
+  --color-gold-glow: rgba(246, 188, 102, 0.45);
+  --color-gold-muted: #f6ac69;
+}
+
+@layer base {
+  html,
+  body {
+    font-size: 18px; /* Base aumentada */
+    line-height: 1.6;
+    color: var(--color-text);
+    background: var(--color-background);
+  }
+
+  .global-gradient-bg {
+    background: #ffe4e6;
+    background: -webkit-linear-gradient(
+      45deg,
+      rgba(255, 228, 230, 1) 0%,
+      rgba(254, 205, 211, 1) 10%,
+      rgba(255, 255, 255, 1) 20%,
+      rgba(255, 241, 242, 1) 30%,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(254, 205, 211, 1) 50%,
+      rgba(255, 255, 255, 1) 60%,
+      rgba(255, 241, 242, 1) 70%,
+      rgba(255, 255, 255, 1) 80%,
+      rgba(255, 241, 242, 1) 90%,
+      rgba(255, 228, 230, 1) 100%
+    );
+    background: -moz-linear-gradient(
+      45deg,
+      rgba(255, 228, 230, 1) 0%,
+      rgba(254, 205, 211, 1) 10%,
+      rgba(255, 255, 255, 1) 20%,
+      rgba(255, 241, 242, 1) 30%,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(254, 205, 211, 1) 50%,
+      rgba(255, 255, 255, 1) 60%,
+      rgba(255, 241, 242, 1) 70%,
+      rgba(255, 255, 255, 1) 80%,
+      rgba(255, 241, 242, 1) 90%,
+      rgba(255, 228, 230, 1) 100%
+    );
+    background: linear-gradient(
+      45deg,
+      rgba(255, 228, 230, 1) 0%,
+      rgba(254, 205, 211, 1) 10%,
+      rgba(255, 255, 255, 1) 20%,
+      rgba(255, 241, 242, 1) 30%,
+      rgba(255, 255, 255, 1) 40%,
+      rgba(254, 205, 211, 1) 50%,
+      rgba(255, 255, 255, 1) 60%,
+      rgba(255, 241, 242, 1) 70%,
+      rgba(255, 255, 255, 1) 80%,
+      rgba(255, 241, 242, 1) 90%,
+      rgba(255, 228, 230, 1) 100%
+    );
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#ffe4e6", endColorstr="#ffe4e6", GradientType=0);
+  }
+
+  /* Fix de Selección de Texto */
+  ::selection {
+    background-color: rgba(245, 92, 122, 0.2); /* Fondo semitransparente Rosa */
+    color: #be123c; /* Texto Rosa Elegante */
+    -webkit-text-fill-color: #be123c; /* Asegura el color incluso en textos con gradiente */
+  }
+  ::-moz-selection {
+    background-color: rgba(245, 92, 122, 0.2);
+    color: #be123c;
+    -webkit-text-fill-color: #be123c;
+  }
+
+  h1,
+  h2,
+  h3 {
+    margin-bottom: 0.5em;
+    line-height: 1.2;
+  }
+
+  h1 {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+  }
+  h2 {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+  h3 {
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
+  }
+
+  /* Footer specific text scaling handling via class mostly, but ensuring minimums */
+  footer p,
+  footer li,
+  footer a {
+    font-size: max(16px, 1rem);
+  }
+
+  /* Negritas de Autoridad: Acento Principal (Neon) */
+  strong,
+  b {
+    color: var(--color-neon) !important;
+    font-weight: 700;
+  }
+
+  /* Global Hover Glow for Links */
+  a:hover {
+    color: var(--color-neon);
+
+    /* text-shadow removido globalmente para evitar conflictos con cards */
+    transition: all 0.3s ease;
+  }
+}
+
+/* ========================================================
+   THEME REMAP LAYER — Clínica Estética (Light Mode)
+   Sobrescribe clases Tailwind hardcodeadas del tema oscuro
+   para que sean agnósticas al tema actual a través de vars.
+   ======================================================= */
+@layer components {
+  /* text-white → color de texto principal del tema */
+  .text-white {
+    color: var(--color-text) !important;
+  }
+
+  /* text-gray-* / text-slate-* → color de texto secundario */
+  .text-gray-400,
+  .text-gray-300,
+  .text-gray-500,
+  .text-slate-300,
+  .text-slate-400,
+  .text-slate-500,
+  .text-slate-600 {
+    color: var(--color-text-muted) !important;
+  }
+
+  .text-slate-50,
+  .text-slate-100,
+  .text-slate-200,
+  .text-slate-700,
+  .text-slate-800,
+  .text-gray-700,
+  .text-gray-800 {
+    color: var(--color-text) !important;
+  }
+
+  /* bg-slate-50 / bg-gray-50 → fondo clínico suave (Mint/Cyan) */
+  .bg-slate-50,
+  .bg-gray-50 {
+    background-color: var(--color-background) !important;
+  }
+
+  /* bg-surface → usa la variable para que funcione en claro y oscuro */
+  .bg-surface {
+    background-color: var(--color-surface) !important;
+  }
+
+  /* glass-card → borde adaptado al tema claro pastel */
+  .glass-card {
+    background-color: var(--color-surface) !important;
+    border: 1px solid rgba(43, 230, 238, 0.15) !important; /* Cyan pastel en borde */
+    box-shadow:
+      0 4px 10px -1px rgba(0, 0, 0, 0.02),
+      0 2px 4px -1px rgba(0, 0, 0, 0.02) !important;
+  }
+
+  /* Bordes estáticos → gris azulado o cyan ultra sutil */
+  .border-white\/10,
+  .border-white\/5,
+  .border-slate-200,
+  .border-gray-200 {
+    border-color: rgba(43, 230, 238, 0.15) !important;
+  }
+
+  /* Divisores en componentes */
+  .border-t.border-white\/10,
+  .border-t.border-white\/5 {
+    border-color: rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Texto muted del hero subtítulo y otras clases similares */
+  .text-text-muted {
+    color: var(--color-text-muted);
+  }
+
+  /* Íconos en botones de testimonial */
+  .text-white\/50 {
+    color: var(--color-text-muted) !important;
+  }
+
+  /* Sección gradient — Glow Radial Asimétrico (Origen en Esquinas) */
+  .section-gradient {
+    /* Glow radial rosa suave desde la esquina inferior izquierda */
+    background:
+      radial-gradient(circle at 0% 100%, #ffe4e6 0%, transparent 60%),
+      var(--color-background) !important;
+  }
+  .section-gradient-45 {
+    /* Glow radial coral/peach desde la esquina superior derecha */
+    background:
+      radial-gradient(circle at 100% 0%, #fecdd3 0%, transparent 55%),
+      var(--color-background) !important;
+  }
+  .section-gradient-135 {
+    /* Glow radial rosa muy cálido desde la esquina superior izquierda */
+    background:
+      radial-gradient(circle at 0% 0%, #fff1f2 0%, transparent 65%),
+      var(--color-background) !important;
+  }
+}
+
+@layer utilities {
+  /* Clase Maestra Glow */
+  .btn-neon-glow {
+    transition: all 0.3s ease;
+  }
+  .btn-neon-glow:hover {
+    box-shadow: 0 0 33px var(--color-neon-glow);
+    transform: scale(1.05);
+  }
+
+  /* Clase Glow para Tarjetas */
+  .card-hover-glow {
+    transition: all 0.3s ease;
+  }
+  .card-hover-glow:hover {
+    /* Usamos la misma variable global pero con el spread de la tarjeta */
+    box-shadow: 0 0 20px var(--color-neon-glow);
+    transform: scale(1.02);
+  }
+
+  /* Clase para aplicar el degradado de platino a cualquier elemento (ej: Títulos) */
+  .text-neon-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-text) 25%,
+      var(--color-neon) 50%,
+      var(--color-text) 75%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+    .text-gold-gradient {
+    background: linear-gradient(
+      135deg,
+      var(--color-gold) 25%,
+      var(--color-gold-glow) 50%,
+      var(--color-gold) 75%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+  }
+
+  /* --- FIRMA VISUAL NEON & PLATINUM --- */
+  .neon-border {
+    border: 1px solid var(--color-neon);
+    box-shadow: 0 0 15px var(--color-neon-glow);
+  }
+
+  .neon-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--color-neon);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--color-neon);
+    display: inline-block;
+  }
+
+  /* Actualizado a Sólido Opaco por petición del usuario */
+  .glass-card {
+    background-color: var(--color-surface);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    /* Mantenemos el nombre glass-card por compatibilidad pero el estilo es sólido */
+  }
+
+  /* Animación de destello metálico */
+  .animate-shine {
+    animation: shine 8s linear infinite;
+  }
+
+  @keyframes shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+
+  /* --- GLOWS & EFECTOS --- */
+  .glow-purple {
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+  }
+
+  /* --- ANIMACIÓN DE REVELACIÓN --- */
+  .reveal {
+    opacity: 0;
+    transform: translateY(60px);
+    transition:
+      opacity 1s ease-out,
+      transform 1s ease-out;
+    visibility: hidden;
+  }
+
+  @media (max-width: 768px) {
+    .reveal {
+      transform: translateY(20px);
+    }
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+    visibility: visible;
+  }
+
+  /* Utilidad extrema para el 404 */
+  .text-404-hero {
+    /* Usamos clamp para que sea responsivo pero masivo */
+    font-size: clamp(8rem, 20vw, 15rem) !important;
+    line-height: 1 !important;
+    display: block !important;
+    margin-bottom: 1rem;
+  }
+
+  /* --- INTEGRACIÓN PROSE-AUTHORITY --- */
+  .prose-unsize h1,
+  .prose-unsize h2,
+  .prose-unsize h3,
+  .prose-unsize h4,
+  .prose-unsize p,
+  .prose-unsize span {
+    font-size: revert !important;
+    font-family: inherit;
+  }
+
+  .prose-invert {
+    --tw-prose-body: var(--color-text);
+    --tw-prose-headings: var(--color-text);
+    --tw-prose-links: var(--color-neon);
+    --tw-prose-bold: var(--color-neon);
+    --tw-prose-bullets: var(--color-neon);
+    --tw-prose-quotes: var(--color-text-muted);
+    --tw-prose-quote-borders: var(--color-neon);
+    --tw-prose-code: var(--color-platinum);
+    --tw-prose-pre-bg: var(--color-surface);
+  }
+}
+
+/* Estilos específicos para Markdown en la base de conocimiento */
+.prose h2,
+.prose h3 {
+  color: var(--color-text);
+  font-family: var(--font-heading);
+  font-weight: bold;
+}
+
+/* ===================================================
+   HERO TITLE — Tema Claro (Clínica Estética)
+   Gradiente palindrómico: oscuro → teal → oscuro
+   para que el loop de animación sea completamente
+   imperceptible y fluido (sin salto a negro/verde).
+   =================================================== */
+.hero-title {
+  background: linear-gradient(
+    90deg,
+    #475569 0%,
+    /* slate-600  (suave, legible) */ #334155 20%,
+    /* slate-700 */ #64748b 40%,
+    /* slate-500  (pre-glow) */ #f68c70 48%,
+    /* Warm Peach (destello) */ #f55c7a 50%,
+    /* Rosa VitaClinic (pico del destello central) */ #f55c7a 52%,
+    /* Rosa VitaClinic */ #64748b 60%,
+    /* slate-500  (post-glow) */ #334155 80%,
+    /* slate-700 */ #475569 100% /* slate-600  (retorno perfecto sin salto) */
+  );
+  background-size: 300% auto; /* Más fluido, sin saturar toda la pantalla */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  /* El 'alternate' evita el corte abrupto, rebotando fluidamente de un lado a otro */
+  animation: heroShine 12s ease-in-out infinite alternate;
+}
+
+/* Énfasis fuerte (negrita) dentro del título hero:
+   Repreventamos que el !important global rompa el brillo. */
+.hero-title strong {
+  -webkit-text-fill-color: transparent !important;
+  background: inherit !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+@keyframes heroShine {
+  0% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: -100% center;
+  }
+}
+
+/* Sección h2 legible en tema claro */
+section h2 {
+  color: var(--color-text) !important;
+}
+
+/* ===================================================
+   FOOTER SECTION TITLES — Tema Claro
+   Reemplaza el gradiente plateado invisible con
+   un color teal sólido + underline decorativo.
+   =================================================== */
+.footer-section-title {
+  color: var(--color-platinum);
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  margin-bottom: 1.25rem;
+  display: inline-block;
+  position: relative;
+}
+.footer-section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 40%;
+  height: 2px;
+  background: var(--color-neon);
+  border-radius: 2px;
+}
+
+/* ====================================================
+   A2LT BRAND KIT: PRECISION LED TRACE ("Electric Spark") 
+   ==================================================== */
+
+@property --trace-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@property --spark-size {
+  syntax: "<angle>";
+  initial-value: 40deg;
+  inherits: false;
+}
+
+@keyframes a2lt-led-trace {
+  0% {
+    --trace-angle: 0deg;
+    --spark-size: 40deg;
+  }
+  90% {
+    --trace-angle: 360deg;
+    --spark-size: 40deg;
+  }
+  100% {
+    --trace-angle: 360deg;
+    --spark-size: 0deg;
+  }
+}
+
+.a2lt-icon-led {
+  position: relative;
+  border: 2px solid rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  filter: grayscale(100%);
+  opacity: 0.7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.5rem;
+  --spark-color: var(--color-neon);
+}
+
+/* Hover base logic */
+.a2lt-icon-led:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+  color: white;
+  background:
+    linear-gradient(#1e293b, #1e293b) padding-box,
+    conic-gradient(
+        from var(--trace-angle),
+        var(--spark-color) 0deg,
+        transparent var(--spark-size)
+      )
+      border-box !important;
+  border-color: transparent !important;
+  animation: a2lt-led-trace 0.6s linear 1 forwards;
+  box-shadow: 0 0 20px var(--color-neon-glow);
+  transform: translateY(-5px) scale(1.1);
+}
+
+/* Specific Networks overrides */
+.a2lt-icon-led.facebook-hover:hover {
+  --spark-color: #ffffff;
+  background:
+    linear-gradient(#1877f2, #1877f2) padding-box,
+    conic-gradient(
+        from var(--trace-angle),
+        var(--spark-color) 0deg,
+        transparent var(--spark-size)
+      )
+      border-box !important;
+  box-shadow: 0 10px 20px -5px rgba(24, 119, 242, 0.5) !important;
+}
+.a2lt-icon-led.instagram-hover:hover {
+  --spark-color: #ffd700;
+  background:
+    linear-gradient(
+        45deg,
+        #f09433 0%,
+        #e6683c 25%,
+        #dc2743 50%,
+        #cc2366 75%,
+        #bc1888 100%
+      )
+      padding-box,
+    conic-gradient(
+        from var(--trace-angle),
+        var(--spark-color) 0deg,
+        transparent var(--spark-size)
+      )
+      border-box !important;
+  box-shadow: 0 10px 20px -5px rgba(220, 39, 67, 0.5) !important;
+}
+.a2lt-icon-led.x-hover:hover {
+  --spark-color: #ffffff;
+  background:
+    linear-gradient(#000000, #000000) padding-box,
+    conic-gradient(
+        from var(--trace-angle),
+        var(--spark-color) 0deg,
+        transparent var(--spark-size)
+      )
+      border-box !important;
+  box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.3) !important;
+}
+.a2lt-icon-led.linkedin-hover:hover {
+  --spark-color: #00ffff;
+  background:
+    linear-gradient(#0a66c2, #0a66c2) padding-box,
+    conic-gradient(
+        from var(--trace-angle),
+        var(--spark-color) 0deg,
+        transparent var(--spark-size)
+      )
+      border-box !important;
+  box-shadow: 0 10px 20px -5px rgba(10, 102, 194, 0.5) !important;
+}
+.a2lt-icon-led.youtube-hover:hover {
+  --spark-color: #ffffff;
+  background:
+    linear-gradient(#ff0000, #ff0000) padding-box,
+    conic-gradient(
+        from var(--trace-angle),
+        var(--spark-color) 0deg,
+        transparent var(--spark-size)
+      )
+      border-box !important;
+  box-shadow: 0 10px 20px -5px rgba(255, 0, 0, 0.5) !important;
+}
+.a2lt-icon-led.tiktok-hover:hover {
+  --spark-color: #25f4ee;
+  background:
+    linear-gradient(#000000, #000000) padding-box,
+    conic-gradient(
+        from var(--trace-angle),
+        var(--spark-color) 0deg,
+        transparent var(--spark-size)
+      )
+      border-box !important;
+  box-shadow:
+    -2px -2px 15px rgba(37, 244, 238, 0.4),
+    2px 2px 15px rgba(254, 44, 85, 0.4) !important;
+}

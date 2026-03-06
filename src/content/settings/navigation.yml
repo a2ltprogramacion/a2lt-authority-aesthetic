@@ -1,0 +1,10 @@
+links:
+  - section_id: casos-clinicos
+    is_external: false
+    label: Casos Clinicos
+action_button: {}
+sticky_cta:
+  enabled: true
+  label: Evalúa tu caso por WhatsApp
+  link: "34600000000"
+  icon: whatsapp

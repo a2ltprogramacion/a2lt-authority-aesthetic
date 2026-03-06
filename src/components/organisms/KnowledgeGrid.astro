@@ -1,0 +1,128 @@
+---
+// @src/components/organisms/KnowledgeGrid.astro
+import { Image } from "astro:assets";
+
+interface Props {
+  knowledge: any[];
+  sectionData?: {
+    title?: string;
+    subtitle?: string;
+    highlighted_list?: string[];
+  };
+}
+
+import { mdToHtml } from "../../utils/markdown";
+
+const { knowledge, sectionData } = Astro.props;
+
+// LOGICA DE FILTRADO
+let featuredItems = [];
+
+if (sectionData?.highlighted_list && sectionData.highlighted_list.length > 0) {
+  // Filtrar por selección manual
+  featuredItems = knowledge.filter((item) =>
+    sectionData.highlighted_list?.includes(item.data.title),
+  );
+} else {
+  // Fallback: Primeros 3 por orden
+  const sortedKnowledge = knowledge.sort(
+    (a: any, b: any) => a.data.order - b.data.order,
+  );
+  featuredItems = sortedKnowledge.slice(0, 3);
+}
+
+const title = sectionData?.title || "Consultorías Destacadas";
+const subtitle =
+  sectionData?.subtitle ||
+  "Programas diseñados para profesionales que buscan liderar en la era digital";
+---
+
+<section
+  id="knowledge"
+  class="min-h-dvh flex items-center scroll-mt-20 relative w-full bg-transparent overflow-hidden pb-20"
+>
+  <div class="container mx-auto px-6">
+    <div class="text-center mb-16">
+      <h2
+        class="text-3xl lg:text-5xl font-heading font-bold text-slate-900 mb-4 [&_p]:inline [&_p]:m-0 [&_strong]:text-neon"
+      >
+        <Fragment set:html={await mdToHtml(title)} />
+      </h2>
+      <div
+        class="text-slate-600 text-xl lg:text-2xl [&_p]:inline [&_p]:m-0 [&_strong]:text-neon"
+      >
+        <Fragment set:html={await mdToHtml(subtitle)} />
+      </div>
+    </div>
+
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 reveal"
+    >
+      {
+        featuredItems.map((item: any) => (
+          <a
+            href={`/knowledge/${item.slug}`}
+            class="group block h-full bg-white border border-slate-100 rounded-2xl overflow-hidden hover:border-neon/30 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-neon/10"
+          >
+            {/* Contenedor de Imagen con Proporción Áurea/Video */}
+            <div class="relative aspect-video overflow-hidden bg-slate-100">
+              <Image
+                src={item.data.main_image}
+                alt={item.data.main_image_alt || item.data.title}
+                width={600}
+                height={338}
+                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out"
+              />
+
+              {/* Badge de Categoría Re-estilizado */}
+              <div class="absolute bottom-3 right-3 z-10">
+                <span class="px-3 py-1 bg-white/90 text-neon text-[10px] font-bold rounded-full border border-neon/20 backdrop-blur-md shadow-sm uppercase tracking-tighter">
+                  {item.data.category || "Artículo"}
+                </span>
+              </div>
+            </div>
+
+            {/* Cuerpo de la Tarjeta */}
+            <div class="p-6 flex flex-col justify-between h-auto min-h-[160px]">
+              <div>
+                <h3 class="text-xl font-heading font-bold text-slate-900 mb-2 group-hover:text-neon transition-colors line-clamp-2 leading-tight">
+                  {item.data.title}
+                </h3>
+                <p class="text-slate-600 text-sm line-clamp-2 mb-4 leading-relaxed font-light">
+                  {item.data.description}
+                </p>
+              </div>
+
+              <div class="mt-4 flex items-center gap-2 text-neon text-[11px] font-bold uppercase tracking-widest group-hover:gap-4 transition-all">
+                Continuar leyendo
+                <span class="text-lg leading-none">→</span>
+              </div>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+
+    {/* BOTÓN VER TODO */}
+    <div class="text-center">
+      <a
+        href="/knowledge"
+        class="inline-flex items-center gap-2 px-8 py-3 rounded-full border border-neon/30 text-neon hover:bg-neon hover:text-primary hover:border-transparent transition-all duration-500 font-bold uppercase tracking-wider text-[12px] lg:text-sm hover:shadow-[0_0_30px_var(--color-neon-glow)] group"
+      >
+        Descubrir Todo el Contenido Médico
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-4 h-4 group-hover:translate-y-1 transition-transform"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"></path></svg
+        >
+      </a>
+    </div>
+  </div>
+</section>

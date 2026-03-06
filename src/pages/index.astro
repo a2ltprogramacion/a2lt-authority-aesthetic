@@ -1,0 +1,136 @@
+---
+// @src/pages/index.astro
+import { getEntry, getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../layouts/Layout.astro";
+
+// --- IMPORTANTE: Eliminamos Navbar y ContactFooter de aquí ---
+// (El Layout se encarga de ellos ahora, evitando duplicidad)
+
+import HeroSection from "../components/organisms/HeroSection.astro";
+import ClientsSection from "../components/organisms/ClientsSection.astro";
+import AboutSection from "../components/organisms/AboutSection.astro";
+import ServicesGrid from "../components/organisms/ServicesGrid.astro";
+import KnowledgeGrid from "../components/organisms/KnowledgeGrid.astro";
+import TestimonialsSection from "../components/organisms/TestimonialsSection.astro";
+import FaqSection from "../components/organisms/FaqSection.astro";
+import CasosClinicos from "../components/organisms/CasosClinicos.astro";
+
+// 1. Obtener Datos del Home
+const homePage = await getEntry("pages", "home");
+const data = homePage?.data;
+const hasData = !!data;
+
+// 2. Obtener Colecciones
+const services = await getCollection("services");
+const testimonials = await getCollection("testimonials");
+const knowledge = await getCollection("knowledge");
+const rawCasosClinicos = await getCollection("casos-clinicos");
+const casosClinicos = rawCasosClinicos
+  .filter((c: CollectionEntry<"casos-clinicos">) => c.data.is_published)
+  .sort(
+    (
+      a: CollectionEntry<"casos-clinicos">,
+      b: CollectionEntry<"casos-clinicos">,
+    ) => a.data.order - b.data.order,
+  );
+
+// 4. Control de Módulos (Feature Flags)
+const defaultModules = {
+  show_hero: true,
+  show_services: true,
+  show_knowledge: true,
+  show_clients: false,
+  show_testimonials: false,
+  show_casos_clinicos: true,
+  show_about: true,
+  show_faq: true,
+};
+const show = { ...defaultModules, ...(data?.modules || {}) };
+const allModulesHidden = !Object.values(show).some(Boolean);
+---
+
+<Layout seo={data?.seo} modules={show}>
+  {
+    hasData ? (
+      allModulesHidden ? (
+        <div class="min-h-[80vh] flex flex-col items-center justify-center text-center p-6 bg-transparent relative overflow-hidden">
+          {/* Subtle Glow Background */}
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--color-neon-glow)_0%,transparent_60%)] opacity-30 pointer-events-none" />
+
+          <div class="relative z-10 max-w-2xl reveal opacity-0 transform translate-y-8 transition-all duration-1000 ease-out">
+            <h1 class="text-5xl md:text-7xl font-heading font-black italic mb-6 tracking-tight text-white drop-shadow-md">
+              Sitio en <br /> <span class="text-neon">Construcción</span>
+            </h1>
+            <p class="text-text-muted text-lg md:text-xl font-light mb-10 max-w-lg mx-auto leading-relaxed">
+              Estamos perfeccionando cada detalle para ofrecerte una experiencia{" "}
+              <strong class="text-neon font-semibold font-sans">premium</strong>{" "}
+              Vuelve muy pronto.
+            </p>
+            <div class="h-1 w-16 bg-neon mx-auto rounded-full shadow-[0_0_15px_var(--color-neon)]" />
+          </div>
+        </div>
+      ) : (
+        <main class="overflow-hidden bg-transparent">
+          {/* --- SECCIONES DE CONTENIDO DINÁMICO (CMS) --- */}
+
+          {show.show_hero && data.hero && <HeroSection data={data.hero} />}
+
+          <div class="global-gradient-bg">
+            {show.show_services && services.length > 0 && (
+              <ServicesGrid
+                services={services}
+                sectionData={data.services_section}
+              />
+            )}
+
+            {show.show_knowledge && knowledge.length > 0 && (
+              <KnowledgeGrid
+                knowledge={knowledge}
+                sectionData={data.knowledge_section}
+              />
+            )}
+
+            {show.show_casos_clinicos && casosClinicos.length > 0 && (
+              <CasosClinicos
+                data={casosClinicos}
+                sectionData={data.casos_clinicos_section}
+              />
+            )}
+
+            {show.show_about && data.about && (
+              <AboutSection data={data.about} />
+            )}
+
+            {show.show_clients && data.clients && (
+              <ClientsSection
+                clients={data.clients}
+                sectionData={data.clients_section}
+              />
+            )}
+
+            {show.show_testimonials && (
+              <TestimonialsSection
+                testimonials={testimonials}
+                sectionData={data.testimonials_section}
+              />
+            )}
+
+            {show.show_faq && data.faq && (
+              <FaqSection data={data.faq} sectionData={data.faq_section} />
+            )}
+          </div>
+        </main>
+      )
+    ) : (
+      /* Fallback si no hay datos en CMS */
+      <div class="min-h-screen flex flex-col items-center justify-center text-center p-6 bg-transparent">
+        <h1 class="text-3xl font-heading font-bold text-white mb-4">
+          🚀 Sistema Inicializando...
+        </h1>
+        <p class="text-gray-400">
+          Verifica que el contenido 'home' exista en el CMS.
+        </p>
+      </div>
+    )
+  }
+</Layout>

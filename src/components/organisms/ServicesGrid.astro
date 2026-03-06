@@ -1,0 +1,197 @@
+---
+// @src/components/organisms/ServicesGrid.astro
+import { Image } from "astro:assets";
+
+interface Props {
+  services: any[];
+  sectionData?: {
+    title?: string;
+    subtitle?: string;
+    section_image?: any;
+    section_image_alt?: string;
+    highlighted_list?: string[];
+  };
+}
+
+import { mdToHtml } from "../../utils/markdown";
+
+const { services, sectionData } = Astro.props;
+
+// LOGICA DE FILTRADO
+let featuredServices = [];
+
+if (sectionData?.highlighted_list && sectionData.highlighted_list.length > 0) {
+  // Filtrar por selección manual
+  featuredServices = services.filter((s) =>
+    sectionData.highlighted_list?.includes(s.data.title),
+  );
+  // Ordenar según el orden de la lista manual si es posible, o mantener orden por defecto
+} else {
+  // Fallback: Primeros 4 por orden
+  const sortedServices = services.sort(
+    (a: any, b: any) => a.data.order - b.data.order,
+  );
+  featuredServices = sortedServices.slice(0, 4);
+}
+
+// PROCESAMIENTO DE MARKDOWN PARA PRECIOS
+const processedServices = await Promise.all(
+  featuredServices.map(async (s) => ({
+    ...s,
+    processedPrice: s.data.price ? await mdToHtml(s.data.price) : null,
+  })),
+);
+
+const title = sectionData?.title || "Nuestros Servicios";
+const subtitle =
+  sectionData?.subtitle || "Soluciones tecnológicas de alto nivel";
+---
+
+<section
+  id="servicios"
+  class="min-h-dvh flex items-center scroll-mt-20 relative w-full bg-transparent overflow-hidden pb-20"
+>
+  <div class="container mx-auto px-6 max-w-8xl">
+    {/* ENCABEZADO DE SECCIÓN */}
+    <div class="max-w-3xl my-8 lg:my-12">
+      <h2
+        class="text-3xl lg:text-4xl font-heading font-bold text-white mb-4 text-balance [&_p]:inline [&_p]:m-0 [&_strong]:text-neon"
+      >
+        <Fragment set:html={await mdToHtml(title)} />
+      </h2>
+      <div
+        class="text-slate-400 text-base lg:text-lg leading-relaxed text-balance [&_p]:inline [&_p]:m-0 [&_strong]:text-neon"
+      >
+        <Fragment set:html={await mdToHtml(subtitle)} />
+      </div>
+    </div>
+
+    {
+      /* A2LT CUSTOMIZATION:
+      - Para cambiar la proporción imagen/tarjetas: edita 'lg:grid-cols-[1fr_1.6fr]'.
+        (Ej. 1fr_1.8fr hace la imagen más pequeña y las tarjetas más anchas).
+      - Para centrar verticalmente: cambia 'items-start' por 'items-center'.
+    */
+    }
+    <div
+      class="grid grid-cols-1 2xl:grid-cols-[1fr_2.1fr] xl:grid-cols-[1fr_1.8fr] gap-8 lg:gap-12 items-center reveal"
+    >
+      {/* LADO IZQUIERDO: IMAGEN DE AUTORIDAD (Decorada) */}
+      <div
+        class="relative order-2 lg:order-1 flex justify-center items-center h-full group/main-image py-10 lg:py-0"
+      >
+        {/* Decoración: Marco Asimétrico Neón */}
+        <div
+          class="absolute -inset-4 lg:-inset-8 border-l-2 border-b-2 border-neon/20 rounded-bl-[4rem] pointer-events-none transform -translate-x-4 translate-y-4 group-hover/main-image:translate-x-0 group-hover/main-image:translate-y-0 transition-transform duration-1000 ease-out"
+        >
+        </div>
+        <div
+          class="absolute -inset-4 lg:-inset-8 border-r-2 border-t-2 border-neon/10 rounded-tr-[4rem] pointer-events-none transform translate-x-4 -translate-y-4 group-hover/main-image:translate-x-0 group-hover/main-image:translate-y-0 transition-transform duration-1000 ease-out delay-75"
+        >
+        </div>
+
+        {/* Círculo de Glow de Fondo */}
+        <div
+          class="absolute w-2/3 h-2/3 bg-neon/10 blur-[100px] rounded-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+        >
+        </div>
+
+        {
+          sectionData?.section_image && (
+            <div class="relative z-10 w-full max-w-sm lg:max-w-none">
+              <Image
+                src={sectionData.section_image}
+                alt={sectionData.section_image_alt || title}
+                width={800}
+                height={1000}
+                class="w-full h-auto object-contain drop-shadow-[0_10px_40px_rgba(99,102,241,0.25)] relative z-20"
+              />
+
+              {/* Soporte de Cristal Inferior: Suaviza el corte de la imagen */}
+              <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 w-4/5 h-24 bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl z-10 hidden lg:block overflow-hidden">
+                <div class="absolute inset-0 bg-linear-to-b from-transparent to-neon/5" />
+                {/* Elementos decorativos internos del cristal */}
+                <div class="absolute top-4 left-4 w-12 h-px bg-neon/40" />
+                <div class="absolute top-6 left-4 w-8 h-px bg-neon/20" />
+              </div>
+
+              {/* Acento vertical derecho */}
+              <div class="absolute -right-4 top-1/4 bottom-1/4 w-px bg-linear-to-b from-transparent via-neon/40 to-transparent hidden lg:block" />
+            </div>
+          )
+        }
+      </div>
+
+      {/* LADO DERECHO: REJILLA DE TARJETAS MINIMALISTAS Y CTA */}
+      <div
+        class="flex flex-col gap-6 lg:gap-0 order-1 lg:order-2 2xl:-mt-10 xl:mt-0"
+      >
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
+          {
+            processedServices.map((service: any) => (
+              <a
+                href={`/servicios/${service.slug}`}
+                class="bg-white/5 hover:bg-white/10 border border-white/5 hover:border-neon/30 rounded-2xl p-5 transition-all duration-500 group relative flex flex-col backdrop-blur-sm"
+              >
+                <div class="flex items-start justify-between w-full mb-3 gap-4">
+                  <h3 class="text-base lg:text-lg font-heading font-bold text-white leading-tight text-left text-neon-gradient animate-shine">
+                    {service.data.title}
+                  </h3>
+                  <div class="w-10 h-10 shrink-0 bg-surface/50 rounded-xl flex items-center justify-center overflow-hidden border border-white/10 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <Image
+                      src={service.data.main_image}
+                      alt={service.data.main_image_alt || service.data.title}
+                      width={40}
+                      height={40}
+                      class="w-full h-full object-cover opacity-80 group-hover:opacity-100"
+                    />
+                  </div>
+                </div>
+
+                <p class="text-slate-400 text-sm leading-relaxed mb-4 line-clamp-2 text-left">
+                  {service.data.description}
+                </p>
+
+                <div class="w-full pt-4 mt-auto border-t border-white/5 flex items-center justify-between">
+                  <div class="text-slate-300 text-sm [&_p]:inline [&_strong]:text-neon [&_em]:text-white transition-colors duration-300">
+                    {service.processedPrice ? (
+                      <Fragment set:html={service.processedPrice} />
+                    ) : (
+                      "Explorar"
+                    )}
+                  </div>
+                  <span class="text-neon font-bold text-lg group-hover:translate-x-2 transition-transform duration-300">
+                    →
+                  </span>
+                </div>
+              </a>
+            ))
+          }
+        </div>
+
+        {/* BOTÓN VER TODOS (Integrado bajo las tarjetas) */}
+        <div class="flex justify-center mt-2 lg:mt-4">
+          <a
+            href="/servicios"
+            class="inline-flex items-center gap-3 px-10 py-4 rounded-full border border-neon/20 text-white bg-surface/30 hover:bg-neon hover:text-primary transition-all duration-500 font-bold uppercase tracking-[0.2em] text-[12px] md:text-xs hover:shadow-[0_0_30px_rgba(0,255,204,0.3)] group overflow-hidden relative"
+          >
+            <span class="relative z-10">Ver todos los servicios</span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-4 h-4 relative z-10 group-hover:translate-x-2 transition-transform duration-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

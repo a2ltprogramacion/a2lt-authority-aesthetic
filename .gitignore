@@ -1,0 +1,37 @@
+# build output
+dist/
+.netlify/
+
+# generated types & astro state
+.astro/
+.claude/
+.vscode/
+.idea/
+
+# A2LT Infrastructure
+# Allow Specialists and Workflows, but ignore volatile state
+.agent/
+
+# dependencies
+node_modules/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+.env.local
+.env.*.local
+
+# System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+*~
+*.swp

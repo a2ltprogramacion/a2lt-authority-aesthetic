@@ -1,0 +1,271 @@
+---
+// @src/components/organisms/Navbar.astro
+import { getEntry } from "astro:content";
+import WhatsAppIcon from "../atoms/WhatsAppIcon.astro";
+
+interface Props {
+  siteName: string;
+  whatsappLink: string;
+  modules?: {
+    show_hero: boolean;
+    show_services: boolean;
+    show_knowledge: boolean;
+    show_clients: boolean;
+    show_testimonials: boolean;
+    show_casos_clinicos: boolean;
+    show_about: boolean;
+    show_faq: boolean;
+  };
+}
+
+const { siteName, whatsappLink, modules } = Astro.props;
+
+// 1. Obtener navegación desde CMS
+const navSettings = await getEntry("settings", "navigation");
+const customLinks = navSettings?.data?.links;
+const actionButton = navSettings?.data?.action_button;
+
+// Fallback si no hay links configurados
+const defaultLinks = [
+  { label: "Inicio", section_id: "hero", is_external: false },
+  { label: "Servicios", section_id: "servicios", is_external: false },
+  {
+    label: "Revista Médica",
+    section_id: "knowledge",
+    is_external: false,
+  },
+  { label: "Nosotros", section_id: "nosotros", is_external: false },
+  { label: "Casos Clínicos", section_id: "casos-clinicos", is_external: false },
+  { label: "FAQ", section_id: "faq", is_external: false },
+];
+
+// Lógica de Fusión (Smart Merge)
+let linksToRender = [...defaultLinks];
+
+if (customLinks && customLinks.length > 0) {
+  customLinks.forEach((link: any) => {
+    // Si el ID existe en los defaults, actualizamos (ej: cambiar nombre)
+    const index = linksToRender.findIndex(
+      (defaultLink) => defaultLink.section_id === link.section_id,
+    );
+
+    if (index !== -1) {
+      linksToRender[index] = { ...linksToRender[index], ...link };
+    } else {
+      // Si es nuevo (ej: enlace externo), lo agregamos al final
+      linksToRender.push(link);
+    }
+  });
+}
+
+// 2. Filtrar enlaces según visibilidad (Feature Flagging)
+const activeLinks = linksToRender
+  .filter((link: any) => {
+    // Si es externo, siempre se muestra
+    if (link.is_external) return true;
+
+    // Si no hay configuración de módulos, todo se muestra
+    if (!modules) return true;
+
+    // Mapa de visibilidad
+    const visibilityMap: Record<string, keyof typeof modules> = {
+      hero: "show_hero",
+      servicios: "show_services",
+      knowledge: "show_knowledge",
+      "casos-clinicos": "show_casos_clinicos",
+      nosotros: "show_about",
+      clients: "show_clients",
+      faq: "show_faq",
+      testimonials: "show_testimonials",
+      contact: "show_hero", // Contacto visible si el Hero (Home) está visible
+    };
+
+    // Excepción: Si es 'contact', siempre pasa (el footer es global)
+    if (link.section_id === "contact") return true;
+
+    const flagKey = visibilityMap[link.section_id];
+    return flagKey ? modules[flagKey] : true;
+  })
+  .map((link: any) => ({
+    name: link.label,
+    href:
+      link.is_external || link.external_url
+        ? link.external_url || "#"
+        : `/#${link.section_id}`, // Construcción dinámica simple
+  }));
+
+// Lógica del Botón de Acción
+const actionLabel = actionButton?.label || "WhatsApp";
+const finalActionLink =
+  actionButton?.use_whatsapp || !actionButton?.url
+    ? whatsappLink
+    : actionButton?.url;
+
+// Decidir estilo: Botón completo si es personalizado, Icono si es "WhatsApp" por defecto
+const isCustomAction = actionLabel.trim().toLowerCase() !== "whatsapp";
+const showActionButton = !modules || modules.show_hero; // Vinculado a visibilidad general (Hero/Contact)
+
+// Separar nombre del sitio para estilado
+const siteParts = siteName.split(" ");
+const firstPart = siteParts[0];
+const restParts = siteParts.slice(1).join(" ");
+---
+
+<header
+  id="main-nav"
+  class="fixed w-full top-0 z-50 transition-all duration-300 bg-white/70 backdrop-blur-md shadow-[0_4px_30px_rgba(0,0,0,0.03)] border-b border-white/20"
+>
+  <div class="absolute inset-0 -z-10"></div>
+
+  <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+    {/* LOGO */}
+    <a href="/" class="flex items-center gap-2 group">
+      <span
+        class="text-2xl font-heading font-black tracking-tight text-slate-800"
+      >
+        {firstPart}
+        <span class="text-slate-600">{restParts}</span>
+        <span class="text-neon">.</span>
+      </span>
+    </a>
+
+    {/* MENÚ DESKTOP */}
+    <nav class="hidden md:flex items-center space-x-8">
+      {
+        activeLinks.map((link: any) => (
+          <a
+            href={link.href}
+            class="nav-link text-sm font-bold text-slate-600 hover:text-slate-900 transition-colors uppercase tracking-widest relative group"
+            target={link.href.startsWith("http") ? "_blank" : "_self"}
+          >
+            {link.name}
+            {/* Animación de subrayado inferior elegante y pastel */}
+            <span class="absolute -bottom-2 left-0 w-0 h-0.5 bg-neon transition-all duration-300 group-hover:w-full" />
+          </a>
+        ))
+      }
+
+      {/* BOTÓN DE ACCIÓN (Dinámico) */}
+      {
+        showActionButton &&
+          (isCustomAction ? (
+            <a
+              href={finalActionLink}
+              target="_blank"
+              class="ml-4 bg-neon text-primary hover:bg-neon/90 hover:shadow-[0_0_20px_var(--color-neon-glow)] px-6 py-2 rounded-full font-bold transition-all duration-300 text-sm uppercase tracking-wider border border-transparent"
+            >
+              {actionLabel}
+            </a>
+          ) : (
+            <a
+              href={finalActionLink}
+              target="_blank"
+              aria-label={actionLabel}
+              class="ml-1 text-gray-400 transition-all duration-300 transform hover:scale-110 hover:text-[#25D366] hover:drop-shadow-[0_0_10px_rgba(37,211,102,0.8)]"
+            >
+              <WhatsAppIcon size={35} />
+            </a>
+          ))
+      }
+    </nav>
+
+    {/* BOTÓN MENU MOVIL */}
+    <button
+      id="menu-toggle"
+      class="md:hidden text-slate-800 p-2 focus:outline-none"
+      aria-label="Abrir menú"
+    >
+      <svg
+        class="w-8 h-8"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"></path></svg
+      >
+    </button>
+  </div>
+</header>
+
+<div
+  id="mobile-menu"
+  class="fixed inset-0 bg-slate-50 z-50 transform translate-x-full transition-transform duration-300 md:hidden flex flex-col items-center justify-center space-y-6 overflow-y-auto py-10"
+>
+  {/* ... (resto del menú móvil igual que antes) ... */}
+  <button
+    id="menu-close"
+    class="absolute top-6 right-6 text-slate-800 hover:text-primary"
+  >
+    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+      ><path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"></path></svg
+    >
+  </button>
+
+  {
+    activeLinks.map((link: any) => (
+      <a
+        href={link.href}
+        class="mobile-link text-xl font-heading font-bold text-slate-800 hover:text-primary"
+        target={link.href.startsWith("http") ? "_blank" : "_self"}
+      >
+        {link.name}
+      </a>
+    ))
+  }
+
+  {
+    showActionButton && (
+      <a
+        href={finalActionLink}
+        target="_blank"
+        class={`mt-4 px-8 py-3 rounded-full font-bold text-lg flex items-center gap-2 transition-all duration-300 ${
+          isCustomAction
+            ? "bg-neon text-primary shadow-[0_0_15px_var(--color-neon-glow)] hover:bg-neon/90 hover:shadow-[0_0_25px_var(--color-neon-glow)] border border-transparent"
+            : "bg-[#25D366] text-white shadow-[0_0_20px_rgba(37,211,102,0.4)] hover:scale-105"
+        }`}
+      >
+        <span>{actionLabel}</span>
+        {!isCustomAction && <WhatsAppIcon size={24} />}
+      </a>
+    )
+  }
+</div>
+
+<script>
+  // ... (El script se mantiene exactamente igual) ...
+  const menuToggle = document.getElementById("menu-toggle");
+  const menuClose = document.getElementById("menu-close");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const mobileLinks = document.querySelectorAll(".mobile-link");
+  const header = document.getElementById("main-nav");
+
+  function toggleMenu() {
+    mobileMenu?.classList.toggle("translate-x-full");
+    document.body.classList.toggle("overflow-hidden");
+  }
+
+  menuToggle?.addEventListener("click", toggleMenu);
+  menuClose?.addEventListener("click", toggleMenu);
+
+  mobileLinks.forEach((link) => {
+    link.addEventListener("click", toggleMenu);
+  });
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 50) {
+      header?.classList.add("bg-white/90", "shadow-md");
+      header?.classList.remove("bg-white/70");
+    } else {
+      header?.classList.remove("bg-white/90", "shadow-md");
+      header?.classList.add("bg-white/70");
+    }
+  });
+</script>

@@ -1,0 +1,100 @@
+---
+import { Image } from "astro:assets";
+import { mdToHtml } from "../../utils/markdown";
+
+interface Props {
+  clients: any[];
+  sectionData?: {
+    title?: string;
+  };
+}
+
+const { clients, sectionData } = Astro.props;
+const title = sectionData?.title || "";
+
+const thresold = 4;
+const isAnimated = clients.length > thresold;
+
+// Sincronización de Velocidad Lenta
+// Asignamos 30 segundos de duración base por logotipo para hacerlo extremadamente suave y constante.
+const secondsPerLogo = 30;
+const duration = clients.length * secondsPerLogo;
+
+// Triplicamos para asegurar el loop suave sin saltos visuales
+const loopGroup = isAnimated ? [...clients, ...clients, ...clients] : clients;
+---
+
+<section id="clients" class="bg-transparent overflow-hidden">
+  <div class="relative w-full flex flex-col items-center">
+    <div
+      class="text-center text-slate-500 text-[10px] md:text-sm font-bold uppercase tracking-[0.3em] mb-12 px-6 [&_p]:inline [&_p]:m-0 [&_strong]:text-neon"
+    >
+      <Fragment set:html={await mdToHtml(title)} />
+    </div>
+
+    {
+      isAnimated ? (
+        <div
+          class="relative w-full overflow-hidden"
+          style={`mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);`}
+        >
+          {/* TRACK INFINITO DE CAROUSEL */}
+          <div
+            class="flex w-max animate-marquee will-change-transform"
+            style={`animation-duration: ${duration}s;`}
+          >
+            {/* Renderizamos duplicado para el loop infinito perfecto */}
+            {[0, 1].map(() => (
+              <div class="flex items-center gap-16 md:gap-24 px-8 md:px-12">
+                {loopGroup.map((client) => (
+                  <div class="h-[100px] md:h-[150px] inline-block grayscale opacity-40 hover:grayscale-0 hover:opacity-100 hover:scale-105 transition-all duration-700 ease-in-out shrink-0 cursor-pointer">
+                    {client.logo && (
+                      <Image
+                        src={client.logo}
+                        alt={client.logo_alt || client.name}
+                        class="h-full w-auto object-contain"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div class="flex flex-wrap justify-center items-center gap-16 md:gap-24 opacity-60 hover:opacity-100 transition-opacity duration-500 w-full max-w-6xl mx-auto px-6">
+          {/* GRILLA ESTÁTICA CENTRADA PARA POCOS LOGOS */}
+          {clients.map((client) => (
+            <div class="h-[100px] md:h-[150px] inline-block grayscale opacity-40 hover:grayscale-0 hover:opacity-100 hover:scale-105 transition-all duration-700 ease-in-out shrink-0">
+              {client.logo && (
+                <Image
+                  src={client.logo}
+                  alt={client.logo_alt || client.name}
+                  class="h-full w-auto object-contain"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  @keyframes marquee {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+  .animate-marquee {
+    animation: marquee linear infinite;
+  }
+  /* Pausa garantizada en hover */
+  .animate-marquee:hover {
+    animation-play-state: paused;
+  }
+</style>

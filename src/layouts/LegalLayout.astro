@@ -1,0 +1,67 @@
+---
+// @src/layouts/LegalLayout.astro
+import "../styles/global.css";
+import "@fontsource/outfit/300.css";
+import "@fontsource/outfit/400.css";
+import "@fontsource/outfit/700.css";
+import "@fontsource/red-hat-display/900-italic.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es" class="scroll-smooth bg-background text-text">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} | Clínica Estética Lumina</title>
+    <meta
+      name="description"
+      content="Información legal y política de privacidad de Clínica Estética Lumina."
+    />
+    <!-- Preconnect a Fontsource para rendimiento -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body
+    class="antialiased min-h-screen flex flex-col font-sans selection:bg-neon selection:text-white"
+  >
+    {/* Minimal Navbar Solo Logo */}
+    <header class="w-full bg-surface border-b border-white/5 py-4">
+      <div
+        class="container mx-auto px-6 max-w-4xl flex items-center justify-between"
+      >
+        <a href="/" class="flex items-center gap-2 group">
+          {/* Logo simulado textual (en entorno real sería imagen del CMS) */}
+          <span
+            class="text-2xl font-heading font-black italic tracking-wide text-white group-hover:text-neon transition-colors"
+            >Lumina.</span
+          >
+        </a>
+        <a
+          href="/"
+          class="text-sm text-text-muted hover:text-white font-medium transition-colors"
+        >
+          &larr; Volver al inicio
+        </a>
+      </div>
+    </header>
+
+    <main class="grow container mx-auto px-6 py-12 md:py-20 max-w-3xl">
+      <slot />
+    </main>
+
+    <footer
+      class="bg-footer py-8 border-t border-white/5 text-center text-sm text-text-muted"
+    >
+      <p>
+        &copy; {new Date().getFullYear()} Clínica Estética Lumina. Todos los derechos
+        reservados.
+      </p>
+    </footer>
+  </body>
+</html>

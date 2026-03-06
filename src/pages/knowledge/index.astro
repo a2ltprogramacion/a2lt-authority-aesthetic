@@ -1,0 +1,168 @@
+---
+// @src/pages/knowledge/index.astro
+import { getCollection, getEntry, type CollectionEntry } from "astro:content";
+import { Image } from "astro:assets";
+import Layout from "../../layouts/Layout.astro";
+import { mdToHtml } from "../../utils/markdown";
+
+// 1. Obtener Items (Artículos/Proyectos)
+const allKnowledge = await getCollection("knowledge");
+const items: CollectionEntry<"knowledge">[] = allKnowledge.sort(
+  (a: { data: { order: number } }, b: { data: { order: number } }) =>
+    a.data.order - b.data.order,
+);
+
+// 2. INTENTO DE CONEXIÓN CMS (Con Red de Seguridad)
+// Intentamos leer el archivo 'knowledge.md'.
+const pageEntry = await getEntry("pages", "knowledge");
+const cmsData = pageEntry?.data;
+
+// 3. DEFINICIÓN DE DATOS (Prioridad: CMS > Texto Fijo)
+const title = cmsData?.title || "Knowledge Base";
+const subtitle =
+  cmsData?.subtitle ||
+  "Nuestra experiencia aplicada: Proyectos reales y documentación técnica.";
+const heroBg = cmsData?.hero_bg;
+
+// 4. Configuración SEO
+const seoConfig = {
+  meta_title:
+    cmsData?.seo?.meta_title || "Base de Conocimiento | A2LT Soluciones",
+  meta_description:
+    cmsData?.seo?.meta_description ||
+    "Explora nuestros proyectos, casos de estudio y artículos técnicos.",
+  social_image: cmsData?.seo?.social_image,
+  social_image_alt: "Proyectos A2LT",
+};
+
+// Helper de Colores (Blindado contra undefined)
+const getCategoryColor = (category: string | undefined) => {
+  if (!category)
+    return "bg-slate-100 text-slate-600 border-slate-200 shadow-sm";
+
+  switch (category) {
+    case "Proyecto":
+    case "Proyecto Complejo":
+      return "bg-amber-50 text-amber-700 border-amber-200 shadow-sm"; /* Dorado suave */
+    case "Artículo":
+    case "Artículo Clínico":
+      return "bg-rose-50 text-rose-700 border-rose-200 shadow-sm"; /* Rosa VitaClinic */
+    case "Asesoría":
+      return "bg-orange-50 text-orange-700 border-orange-200 shadow-sm"; /* Coral/Acento */
+    case "Tecnología Médica":
+      return "bg-purple-50 text-purple-700 border-purple-200 shadow-sm";
+    default:
+      return "bg-slate-100 text-slate-600 border-slate-200 shadow-sm";
+  }
+};
+---
+
+<Layout seo={seoConfig}>
+  {/* HEADER DE SECCIÓN DINÁMICO */}
+  <section class="relative py-24 bg-footer overflow-hidden">
+    {/* Lógica de Fondo: Imagen CMS vs Neón Default */}
+    {
+      heroBg ? (
+        <div class="absolute inset-0 z-0">
+          <Image
+            src={heroBg}
+            alt="Background Knowledge"
+            class="w-full h-full object-cover opacity-90 mix-blend-luminosity"
+            width={2816}
+            height={1536}
+          />
+          {/* Overlay gradiente denso izquierdo para leer texto sobre imagen */}
+          <div class="absolute inset-0 bg-linear-to-r from-white via-white/10 to-transparent" />
+          {/* Glow clínico sutil */}
+          <div class="absolute inset-0 bg-[radial-gradient(circle_at_left,var(--color-neon-glow)_0%,transparent_50%)] opacity-30 mix-blend-screen pointer-events-none" />
+          {/* Soft fade inferior */}
+          <div class="absolute inset-0 bg-linear-to-t from-footer via-footer/40 to-transparent" />
+        </div>
+      ) : (
+        <>
+          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[60%] h-px bg-linear-to-r from-transparent via-secondary/50 to-transparent" />
+          <div class="absolute top-10 left-0 w-96 h-96 bg-secondary/5 blur-[100px] rounded-full pointer-events-none" />
+        </>
+      )
+    }
+
+    <div
+      class="container mx-auto px-6 text-center md:text-left relative z-10 pt-10"
+    >
+      <h1
+        class="text-4xl md:text-7xl font-heading font-black italic text-white mb-6 uppercase tracking-tight hero-title"
+      >
+        <Fragment set:html={await mdToHtml(title)} />
+      </h1>
+      <div
+        class="text-xl text-gray-400 max-w-2xl mx-auto md:mx-0 font-light [&_p]:inline [&_p]:m-0"
+      >
+        <Fragment set:html={await mdToHtml(subtitle)} />
+      </div>
+    </div>
+  </section>
+
+  {/* LISTADO DE ITEMS */}
+  <section class="py-16 bg-background min-h-[50vh]">
+    <div class="container mx-auto px-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        {
+          items.map((item) => (
+            <a href={`/knowledge/${item.slug}`} class="group block h-full">
+              <article class="h-full flex flex-col bg-surface border border-slate-100 rounded-2xl overflow-hidden hover:border-neon/30 hover:-translate-y-2 transition-all duration-500 shadow-lg hover:shadow-neon/10">
+                {/* Imagen con Zoom Effect */}
+                <div class="relative h-64 overflow-hidden">
+                  <Image
+                    src={item.data.main_image}
+                    alt={item.data.main_image_alt || item.data.title}
+                    class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 ease-out"
+                    width={2816}
+                    height={1536}
+                  />
+
+                  {/* Badge de Categoría */}
+                  <div class="absolute bottom-4 right-4 z-10">
+                    <span
+                      class={`px-3 py-1 rounded-full text-xs font-bold tracking-wider border backdrop-blur-md ${getCategoryColor(item.data.category)}`}
+                    >
+                      {item.data.category || "General"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Contenido */}
+                <div class="p-8 flex-1 flex flex-col">
+                  <h3 class="text-2xl font-heading font-bold text-slate-900 mb-3 group-hover:text-neon transition-colors">
+                    {item.data.title}
+                  </h3>
+
+                  <p class="text-slate-600 text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
+                    {item.data.description}
+                  </p>
+
+                  <div class="flex items-center gap-2 text-neon font-bold text-sm uppercase tracking-wider group-hover:gap-4 transition-all">
+                    Leer Más
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="w-4 h-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M14 5l7 7m0 0l-7 7m7-7H3"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </article>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>
