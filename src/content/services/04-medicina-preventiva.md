@@ -1,6 +1,6 @@
 ---
 title: Medicina Preventiva y Wellness
-main_image: ../../assets/uploads/medicina-preventiva-y-wellness.png
+main_image: ../../assets/uploads/medicina-preventiva-y-wellness.webp
 main_image_alt: Medicina preventiva enfocada en bienestar y longevidad.
 description: Combinamos sueroterapia, nutricosmética y terapias antiaging
   integrales para optimizar tu salud desde el interior hacia el exterior.

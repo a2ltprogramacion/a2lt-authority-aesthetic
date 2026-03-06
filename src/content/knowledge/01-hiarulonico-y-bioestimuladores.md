@@ -2,7 +2,7 @@
 title: "Ácido Hialurónico vs Bioestimuladores: Ciencia y Resultados"
 description: "Descubre las diferencias clínicas, indicaciones precisas y por qué el abordaje combinado es el nuevo estándar de oro en el rejuvenecimiento facial sin cirugía."
 category: "Artículo Clínico"
-main_image: "../../assets/uploads/cosmetologist-with-syringe-patient-chair.jpg"
+main_image: "../../assets/uploads/cosmetologist-with-syringe-patient-chair.webp"
 main_image_alt: "Cosmetóloga diplomada preparando jeringa para paciente en silla de procedimientos."
 order: 1
 draft: false

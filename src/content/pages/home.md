@@ -13,13 +13,13 @@ seo:
   meta_title: Clínica Estética VitaClinic| Rejuvenecimiento y Medicina Avanzada
   meta_description: Transformamos tu naturaleza con ciencia de precisión. Medicina
     estética avanzada en Valencia, Carabobo. Agenda tu evaluación gratuita.
-  social_image: ../../assets/uploads/logo1-vitaclinic-rbg.png
+  social_image: ../../assets/uploads/logo1-vitaclinic-rbg.webp
   social_image_alt: Logo vitaclinic medicina estetica and spa
-  favicon: ../../assets/uploads/logo-vitaclinic-w.png
+  favicon: ../../assets/uploads/logo-vitaclinic-w.webp
 hero:
   bg_variant: image
-  image: ../../assets/uploads/hero-vitaclinic-desktop.png
-  image_mobile: ../../assets/uploads/hero-vitaclinic-movil.png
+  image: ../../assets/uploads/hero-vitaclinic-desktop.webp
+  image_mobile: ../../assets/uploads/hero-vitaclinic-movil.webp
   image_alt: Doctora Nelyan Lopez junto a una modelo rejuvenecida por tratamiento facial
   title: Eleva tu **belleza natural** con ciencia y precisión.
   subtitle: Tratamientos personalizados bajo supervisión médica especializada. Tu
@@ -30,7 +30,7 @@ services_section:
   title: Tratamientos **Estéticos Avanzados**
   subtitle: "**Realzamos tu belleza natural con ciencia y precisión.** Protocolos
     médicos personalizados para resultados armónicos y seguros."
-  section_image: ../../assets/uploads/servicios-jousy-chan-vitaclinic.png
+  section_image: ../../assets/uploads/servicios-jousy-chan-vitaclinic.webp
   section_image_alt: Jousy Chan, Servicios vitaclinic
 knowledge_section:
   title: Publicaciones de **Autoridad Médica**
@@ -44,7 +44,7 @@ casos_clinicos_section:
     transformación de nuestros pacientes.
 about:
   title: Nuestra Filosofía **Médica**
-  image: ../../assets/uploads/vitaclinic-neylan-lopez.png
+  image: ../../assets/uploads/vitaclinic-neylan-lopez.webp
   image_alt: VitaClinic - Dra. Neylan Lopez
   business_bio: "En **vitaclinic** combinamos la precisión médica con una visión
     estética sobria y contemporánea. La Dra. Neylan Lopez lidera cada protocolo
@@ -57,22 +57,22 @@ about:
 clients_section:
   title: ""
 clients:
-  - logo: ../../assets/uploads/fillmed__fillmed.com_-removebg-preview.png
+  - logo: ../../assets/uploads/fillmed__fillmed.com_-removebg-preview.webp
     name: FILLMED
     logo_alt: logo FILLMED
-  - logo: ../../assets/uploads/bella-aurora-removebg.png
+  - logo: ../../assets/uploads/bella-aurora-removebg.webp
     logo_alt: Bella Aurora
     name: Bella Aurora
-  - logo: ../../assets/uploads/casmara-removebg-preview.png
+  - logo: ../../assets/uploads/casmara-removebg-preview.webp
     logo_alt: Casmara
     name: Casmara
-  - logo: ../../assets/uploads/loreal-emblem_cr-removebg-preview.png
+  - logo: ../../assets/uploads/loreal-emblem_cr-removebg-preview.webp
     logo_alt: L'ORÉAL Paris Prossionnel
     name: L'ORÉAL Paris Prossionnel
-  - logo: ../../assets/uploads/mac-cosmetics-logo_cr-removebg-preview.png
+  - logo: ../../assets/uploads/mac-cosmetics-logo_cr-removebg-preview.webp
     logo_alt: MAC
     name: MAC
-  - logo: ../../assets/uploads/valmy_cr-removebg-preview.png
+  - logo: ../../assets/uploads/valmy_cr-removebg-preview.webp
     logo_alt: Valmy
     name: Valmy
 testimonials_section:
@@ -125,7 +125,7 @@ contact:
     linkedin: https://www.instagram.com/vitaclinic.ve/
     facebook: https://www.instagram.com/vitaclinic.ve/
   phone: +58 412-7140688
-  footer_logo: ../../assets/uploads/logo1-vitaclinic-rbg.png
+  footer_logo: ../../assets/uploads/logo1-vitaclinic-rbg.webp
   address: Valencia, Carabobo - Urb. La Trigaleña frente al colegio apusito
     bajando por el farmatodo
   footer_logo_alt: "Logotipo oficial de Clínica Estética VitaClinic: El sello de

@@ -2,7 +2,7 @@
 title: "Medicina Estética Profiláctica: El Poder de la Prevención"
 description: "¿A qué edad es ideal empezar a cuidar el colágeno? Por qué la intervención temprana y sutil es mucho más efectiva que la corrección drástica."
 category: "Asesoria"
-main_image: "../../assets/uploads/thoughtful-medical-worker-young-doctor-woman-looking-unamused-bored-standing-white-coat-against-b.jpg"
+main_image: "../../assets/uploads/thoughtful-medical-worker-young-doctor-woman-looking-unamused-bored-standing-white-coat-against-b.webp"
 main_image_alt: "Médico especialista reflexionando sobre protocolos estéticos preventivos."
 order: 2
 draft: false

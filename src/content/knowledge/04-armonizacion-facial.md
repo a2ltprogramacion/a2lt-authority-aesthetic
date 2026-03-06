@@ -2,7 +2,7 @@
 title: "Armonización Facial Integral (Full Face)"
 description: "Por qué tratar el rostro como una unidad arquitectónica completa garantiza resultados dramáticamente más naturales que el tratamiento de zonas aisladas."
 category: "Proyecto Complejo"
-main_image: "../../assets/uploads/medium-shot-model-with-arms-crossed.jpg"
+main_image: "../../assets/uploads/medium-shot-model-with-arms-crossed.webp"
 main_image_alt: "Modelo femenina mostrando resultados estéticos de armonización facial con brazos cruzados."
 order: 4
 draft: false

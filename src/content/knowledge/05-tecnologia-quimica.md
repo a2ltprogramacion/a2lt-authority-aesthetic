@@ -2,7 +2,7 @@
 title: "Tecnología Química y Láser en el Cuidado Dérmico"
 description: "Más allá de las cremas: Entendiendo cómo los peelings médicos profundos y las terapias de luz estructuran la piel a nivel celular."
 category: "Tecnología Médica"
-main_image: "../../assets/uploads/woman-with-doctor-cosmetology-studio.jpg"
+main_image: "../../assets/uploads/woman-with-doctor-cosmetology-studio.webp"
 main_image_alt: "Doctor y paciente mujer en un estudio de cosmetología clínica."
 order: 5
 draft: false

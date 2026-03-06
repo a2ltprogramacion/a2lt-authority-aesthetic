@@ -1,6 +1,6 @@
 ---
 title: Toxina Botulínica (Neuromoduladores)
-main_image: ../../assets/uploads/toxina-botulínica-neuromoduladores-.png
+main_image: ../../assets/uploads/toxina-botulínica-neuromoduladores-.webp
 main_image_alt: Paciente relajada tras aplicación de toxina botulínica en el
   tercio superior del rostro.
 description: Prevención y tratamiento de arrugas de expresión para un rostro

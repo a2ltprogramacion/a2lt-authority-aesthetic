@@ -2,7 +2,7 @@
 title: "Mitos Científicos de la Toxina Botulínica"
 description: "Lo que la ciencia dicta realmente sobre los neuromoduladores faciales, el efecto de parálisis facial y la prevención del envejecimiento dinámico."
 category: "Artículo Clínico"
-main_image: "../../assets/uploads/close-up-confident-corporate-woman-professional-entrepreneur-smiling-cross-arms-chest-smil.jpg"
+main_image: "../../assets/uploads/close-up-confident-corporate-woman-professional-entrepreneur-smiling-cross-arms-chest-smil.webp"
 main_image_alt: "Profesional sonriendo, demostrando resultados naturales."
 order: 3
 draft: false

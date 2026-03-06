@@ -1,6 +1,6 @@
 ---
 title: Armonización Facial Global
-main_image: ../../assets/uploads/armonización-facial-global.png
+main_image: ../../assets/uploads/armonización-facial-global.webp
 main_image_alt: Armonización facial con resultados naturales y preservación de
   la estructura original del paciente.
 description: Protocolo integral con ácido hialurónico de alta densidad para

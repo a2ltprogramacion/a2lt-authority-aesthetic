@@ -1,6 +1,6 @@
 ---
 title: Bioestimulación Celular Avanzada
-main_image: ../../assets/uploads/bioestimulación-celular-avanzada.png
+main_image: ../../assets/uploads/bioestimulación-celular-avanzada.webp
 main_image_alt: Piel firme e hidratada gracias a la estimulación de colágeno.
 description: Activamos tus propios fibroblastos para generar nuevo colágeno,
   redensificar la piel y tratar flacidez desde el interior.
